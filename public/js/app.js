@@ -140,10 +140,10 @@ function handleLogout(e) {
 // =====================
 // Existing functionality
 // =====================
-// async function fetchProducts() {
-//     const res = await fetch("/api/products");
-//     return await res.json();
-// }
+async function fetchProducts() {
+    const res = await fetch("/api/v1/products");
+    return await res.json();
+}
 
 // // async function fetchSellers() {
 // //     const res = await fetch("/api/user");

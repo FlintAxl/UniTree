@@ -12,9 +12,7 @@ router.post('/users', userController.createUser);
 router.put('/users/:id', userController.updateUser);
 router.delete('/users/:id', userController.deleteUser);
 
-// Admin Pet CRUD
-router.get('/pets', petController.getAllPets);
-router.get('/pets/:id', petController.getPetById);
+
 
 // ✅ Use multer fields middleware correctly
 const petUploadFields = upload.fields([
@@ -22,7 +20,9 @@ const petUploadFields = upload.fields([
   { name: 'level2_image', maxCount: 1 },
   { name: 'level3_image', maxCount: 1 }
 ]);
-
+// Admin Pet CRUD
+router.get('/pets', petController.getAllPets);
+router.get('/pets/:id', petController.getPetById);
 router.post('/pets', petUploadFields, petController.createPet);
 router.put('/pets/:id', petUploadFields, petController.updatePet);
 router.delete('/pets/:id', petController.deletePet);
