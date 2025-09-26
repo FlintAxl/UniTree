@@ -1,8 +1,9 @@
+// routes/pet.js
 const express = require('express');
 const router = express.Router();
 const userController = require('../Controllers/user');
 const petController = require('../Controllers/pet');
-const { uploadPet } = require('../utils/multer');
+const upload = require('../utils/multer');
 
 // Admin User CRUD
 router.get('/users', userController.getAllUsers);
@@ -12,12 +13,11 @@ router.put('/users/:id', userController.updateUser);
 router.delete('/users/:id', userController.deleteUser);
 
 // Admin Pet CRUD
-// Admin Pet CRUD
 router.get('/pets', petController.getAllPets);
 router.get('/pets/:id', petController.getPetById);
 
-// Use multer fields middleware correctly
-const petUploadFields = uploadPet.fields([
+// ✅ Use multer fields middleware correctly
+const petUploadFields = upload.fields([
   { name: 'level1_image', maxCount: 1 },
   { name: 'level2_image', maxCount: 1 },
   { name: 'level3_image', maxCount: 1 }

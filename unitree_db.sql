@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 26, 2025 at 10:48 AM
+-- Generation Time: Sep 26, 2025 at 11:23 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -51,6 +51,7 @@ CREATE TABLE `listings` (
   `listing_id` int(11) NOT NULL,
   `seller_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
   `title` varchar(100) NOT NULL,
   `description` text DEFAULT NULL,
   `price` decimal(10,2) NOT NULL,
@@ -111,7 +112,6 @@ CREATE TABLE `pets` (
 
 INSERT INTO `pets` (`pet_id`, `user_id`, `pet_name`, `level`, `coins`, `level1_image`, `level2_image`, `level3_image`, `last_fed`, `has_fruit`) VALUES
 (26, 5, 'groot1', 3, 1, '1758628487182.jpg', '1758628487182.png', '1758628487182.jpg', NULL, 0),
-(27, 7, 'blaziken', 1, 0, NULL, NULL, NULL, NULL, 0),
 (28, 15, 'a', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
 (29, 15, 'a', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
 (30, 16, 'kulet1', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
@@ -143,8 +143,7 @@ INSERT INTO `pets` (`pet_id`, `user_id`, `pet_name`, `level`, `coins`, `level1_i
 (59, 41, 'mimiyuh', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
 (60, 42, 'taytay', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
 (61, 42, 'taytay', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(62, 43, 'blue', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(63, 43, 'blue', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0);
+(62, 43, 'blue', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -158,6 +157,7 @@ CREATE TABLE `products` (
   `description` text DEFAULT NULL,
   `price` decimal(10,2) NOT NULL,
   `stock` int(11) DEFAULT 0,
+  `category_id` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -165,17 +165,30 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `name`, `description`, `price`, `stock`, `created_at`) VALUES
-(1, 'Wireless Mouse', 'Ergonomic wireless mouse with 2.4GHz USB receiver.', 599.00, 50, '2025-09-25 05:19:07'),
-(2, 'Mechanical Keyboard', 'RGB backlit mechanical keyboard with blue switches.', 2499.00, 20, '2025-09-25 05:19:07'),
-(3, 'USB-C Charger', 'Fast-charging 65W USB-C wall charger compatible with laptops and phones.', 999.00, 35, '2025-09-25 05:19:07'),
-(4, 'Bluetooth Headphones', 'Over-ear noise-cancelling Bluetooth headphones with 20-hour battery life.', 3499.00, 15, '2025-09-25 05:19:07'),
-(5, 'Smartphone Stand', 'Adjustable aluminum alloy desk stand for smartphones and tablets.', 399.00, 60, '2025-09-25 05:19:07'),
-(6, 'Gaming Monitor', '27-inch FHD gaming monitor with 144Hz refresh rate.', 8999.00, 10, '2025-09-25 05:19:07'),
-(7, 'External SSD 1TB', 'Portable high-speed external SSD with USB 3.2 interface.', 5999.00, 12, '2025-09-25 05:19:07'),
-(8, 'Webcam 1080p', 'Full HD webcam with built-in microphone and privacy cover.', 1299.00, 25, '2025-09-25 05:19:07'),
-(9, 'Portable Speaker', 'Compact Bluetooth speaker with waterproof design and 12-hour playtime.', 1799.00, 30, '2025-09-25 05:19:07'),
-(10, 'Smartwatch', 'Fitness tracking smartwatch with heart-rate monitor and sleep tracking.', 2999.00, 18, '2025-09-25 05:19:07');
+INSERT INTO `products` (`product_id`, `name`, `description`, `price`, `stock`, `category_id`, `created_at`) VALUES
+(1, 'Wireless Mouse', 'Ergonomic wireless mouse with 2.4GHz USB receiver.', 599.00, 50, NULL, '2025-09-25 05:19:07'),
+(2, 'Mechanical Keyboard', 'RGB backlit mechanical keyboard with blue switches.', 2499.00, 20, NULL, '2025-09-25 05:19:07'),
+(3, 'USB-C Charger', 'Fast-charging 65W USB-C wall charger compatible with laptops and phones.', 999.00, 35, NULL, '2025-09-25 05:19:07'),
+(4, 'Bluetooth Headphones', 'Over-ear noise-cancelling Bluetooth headphones with 20-hour battery life.', 3499.00, 15, NULL, '2025-09-25 05:19:07'),
+(5, 'Smartphone Stand', 'Adjustable aluminum alloy desk stand for smartphones and tablets.', 399.00, 60, NULL, '2025-09-25 05:19:07'),
+(6, 'Gaming Monitor', '27-inch FHD gaming monitor with 144Hz refresh rate.', 8999.00, 10, NULL, '2025-09-25 05:19:07'),
+(7, 'External SSD 1TB', 'Portable high-speed external SSD with USB 3.2 interface.', 5999.00, 12, NULL, '2025-09-25 05:19:07'),
+(8, 'Webcam 1080p', 'Full HD webcam with built-in microphone and privacy cover.', 1299.00, 25, NULL, '2025-09-25 05:19:07'),
+(9, 'Portable Speaker', 'Compact Bluetooth speaker with waterproof design and 12-hour playtime.', 1799.00, 30, NULL, '2025-09-25 05:19:07'),
+(10, 'Smartwatch', 'Fitness tracking smartwatch with heart-rate monitor and sleep tracking.', 2999.00, 18, NULL, '2025-09-25 05:19:07');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `product_images`
+--
+
+CREATE TABLE `product_images` (
+  `image_id` int(11) NOT NULL,
+  `product_id` int(11) DEFAULT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -269,7 +282,8 @@ ALTER TABLE `categories`
 ALTER TABLE `listings`
   ADD PRIMARY KEY (`listing_id`),
   ADD KEY `seller_id` (`seller_id`),
-  ADD KEY `product_id` (`product_id`);
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `category_id` (`category_id`);
 
 --
 -- Indexes for table `orders`
@@ -297,7 +311,15 @@ ALTER TABLE `pets`
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
-  ADD PRIMARY KEY (`product_id`);
+  ADD PRIMARY KEY (`product_id`),
+  ADD KEY `fk_products_category` (`category_id`);
+
+--
+-- Indexes for table `product_images`
+--
+ALTER TABLE `product_images`
+  ADD PRIMARY KEY (`image_id`),
+  ADD KEY `product_id` (`product_id`);
 
 --
 -- Indexes for table `rewards`
@@ -364,6 +386,12 @@ ALTER TABLE `products`
   MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
+-- AUTO_INCREMENT for table `product_images`
+--
+ALTER TABLE `product_images`
+  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `rewards`
 --
 ALTER TABLE `rewards`
@@ -390,7 +418,8 @@ ALTER TABLE `users`
 --
 ALTER TABLE `listings`
   ADD CONSTRAINT `listings_ibfk_1` FOREIGN KEY (`seller_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `listings_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `listings_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `listings_ibfk_3` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `orders`
@@ -410,6 +439,18 @@ ALTER TABLE `order_items`
 --
 ALTER TABLE `pets`
   ADD CONSTRAINT `pets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `products`
+--
+ALTER TABLE `products`
+  ADD CONSTRAINT `fk_products_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `product_images`
+--
+ALTER TABLE `product_images`
+  ADD CONSTRAINT `product_images_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `rewards`

@@ -6,6 +6,6 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 
-const uploadPet = multer({ storage });
+const upload = multer({ storage });
 
-module.exports = { uploadPet };
+module.exports = upload;
