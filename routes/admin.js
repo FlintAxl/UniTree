@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../Controllers/user');
 const petController = require('../Controllers/pet');
+const order = require('../Controllers/order');
 const upload = require('../utils/multer');
 
 // Admin User CRUD
@@ -26,6 +27,10 @@ router.get('/pets/:id', petController.getPetById);
 router.post('/pets', petUploadFields, petController.createPet);
 router.put('/pets/:id', petUploadFields, petController.updatePet);
 router.delete('/pets/:id', petController.deletePet);
+
+//admin orders
+router.get('/orders/all', order.getAllOrders);
+router.patch('/orders/update-status', order.updateOrderStatus);
 
 
 module.exports = router;

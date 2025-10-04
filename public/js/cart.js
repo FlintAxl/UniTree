@@ -139,23 +139,25 @@ function renderCart() {
         subtotal += itemTotal;
         
         itemsHtml += `
-            <div class="cart-item" data-index="${index}">
-                <img src="${item.image || 'images/placeholder.jpg'}" alt="${item.name}" class="cart-item-image"
-    
-                <div class="cart-item-details">
-                    <h3>${item.name}</h3>
-                    <p>${item.description || ''}</p>
-                </div>
-                <div class="cart-item-price">${formatPrice(item.price)}</div>
-                <div class="quantity-control">
-                    <button class="quantity-btn decrease">-</button>
-                    <input type="number" class="quantity-input" value="${item.quantity}" min="1">
-                    <button class="quantity-btn increase">+</button>
-                </div>
-                <button class="remove-btn" title="Remove item">×</button>
-                <div class="cart-item-total">${formatPrice(itemTotal)}</div>
-            </div>
-        `;
+<div class="cart-item" data-index="${index}">
+    <img src="${item.image || 'images/placeholder.jpg'}" 
+         alt="${item.name}" 
+         class="cart-item-image" /
+
+    <div class="cart-item-details">
+        <h3>${item.name}</h3>
+        <p>${item.description || ''}</p>
+    </div>
+    <div class="cart-item-price">${formatPrice(item.price)}</div>
+    <div class="quantity-control">
+        <button class="quantity-btn decrease">-</button>
+        <input type="number" class="quantity-input" value="${item.quantity}" min="1">
+        <button class="quantity-btn increase">+</button>
+    </div>
+    <button class="remove-btn" title="Remove item">×</button>
+    <div class="cart-item-total">${formatPrice(itemTotal)}</div>
+</div>`;
+
     });
     
     $cartItems.html(itemsHtml);
@@ -246,7 +248,8 @@ $('#checkoutBtn').click(function() {
 // Checkout function
 function checkout() {
   const userId = JSON.parse(sessionStorage.getItem('userId'));
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  cart = JSON.parse(localStorage.getItem('cart')) || [];
+
 
 
   if (!userId) return Swal.fire('Login required');
@@ -271,19 +274,27 @@ function checkout() {
     contentType: 'application/json',
     data: JSON.stringify(payload),
     success: function (data) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Thank You for Ordering!',
-        text: 'Your order has been placed successfully.',
-        confirmButtonText: 'Continue Shopping',
-        confirmButtonColor: '#8B5E3C',
-        background: '#fff8f0',
-        color: '#5c4433'
-      });
+  // Clear cart first
+  localStorage.removeItem('cart');
+  cart = [];
+  renderCart();
+  updateCartCount();
 
-      localStorage.removeItem(getCartKey());
-      renderCart();
-    },
+  // Then show success popup
+  Swal.fire({
+    icon: 'success',
+    title: 'Thank You for Ordering!',
+    text: 'Your order has been placed successfully.',
+    confirmButtonText: 'Continue Shopping',
+    confirmButtonColor: '#8B5E3C',
+    background: '#fff8f0',
+    color: '#5c4433'
+  }).then(() => {
+    // Optional: redirect back to products page
+    window.location.href = 'products.html';
+  });
+}
+,
     error: function (xhr) {
       Swal.fire('Order failed', xhr.responseText || 'Server error', 'error');
     }

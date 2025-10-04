@@ -5,5 +5,6 @@ router.post('/order', order.createOrder);
 router.get('/my-orders/:user_id', order.getCustomerOrders);
 router.patch('/cancel-order', order.cancelOrder);
 
+// New routes for admin
 
 module.exports = router;

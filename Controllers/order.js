@@ -154,3 +154,109 @@ exports.cancelOrder = (req, res) => {
       });
   });
 };
+
+
+
+
+
+
+// ================= ADMIN FUNCTIONS =================
+
+// Get all orders with items + total
+exports.getAllOrders = (req, res) => {
+
+    const sql = `
+  SELECT 
+    o.order_id,
+    u.username AS customer_name,
+    o.date_placed,
+    o.status,
+    (
+      SELECT SUM(oi.quantity * oi.price)
+      FROM order_items oi
+      WHERE oi.order_id = o.order_id
+    ) AS total_amount,
+    (
+      SELECT GROUP_CONCAT(p.name SEPARATOR ', ')
+      FROM order_items oi
+      JOIN products p ON oi.product_id = p.product_id
+      WHERE oi.order_id = o.order_id
+    ) AS items
+  FROM orders o
+  LEFT JOIN users u ON o.user_id = u.user_id
+  ORDER BY o.date_placed DESC
+`;
+
+
+  connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('SQL Error:', err);
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ data: results });
+  });
+};
+
+// ================= UPDATE ORDER STATUS =================
+exports.updateOrderStatus = (req, res) => {
+  const { order_id, status } = req.body;
+
+  const validStatuses = ['pending', 'received', 'cancelled', 'shipped'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ error: 'Invalid status' });
+  }
+
+  // If cancelling → rollback stock
+  if (status === 'cancelled') {
+    const getItemsSql = `
+      SELECT product_id, quantity 
+      FROM order_items 
+      WHERE order_id = ?
+    `;
+    connection.query(getItemsSql, [order_id], (err, itemRows) => {
+      if (err) return res.status(500).json({ error: 'Failed to fetch order items', details: err });
+
+      if (itemRows.length === 0) {
+        return res.status(404).json({ error: 'No items found for this order' });
+      }
+
+      // Rollback stock
+      const rollbackPromises = itemRows.map(item => {
+        return new Promise((resolve, reject) => {
+          const rollbackSql = `UPDATE products SET stock = stock + ? WHERE id = ?`;
+          connection.query(rollbackSql, [item.quantity, item.product_id], (err2) => {
+            if (err2) reject(err2);
+            else resolve();
+          });
+        });
+      });
+
+      Promise.all(rollbackPromises)
+        .then(() => {
+          // After rollback, update status
+          finalizeStatusUpdate(order_id, status, res);
+        })
+        .catch(err3 => {
+          return res.status(500).json({ error: 'Stock rollback failed', details: err3 });
+        });
+    });
+  } else {
+    // For pending, received, shipped → just update
+    finalizeStatusUpdate(order_id, status, res);
+  }
+};
+
+// ================= HELPER =================
+function finalizeStatusUpdate(order_id, status, res) {
+  connection.execute(
+    `UPDATE orders SET status = ? WHERE order_id = ?`,
+    [status, order_id],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: 'Failed to update status', details: err });
+      if (result.affectedRows === 0) return res.status(404).json({ error: 'Order not found' });
+
+      // ✅ No email/receipt, just confirm
+      return res.status(200).json({ success: true, message: 'Status updated successfully' });
+    }
+  );
+}
