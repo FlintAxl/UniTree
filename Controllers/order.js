@@ -223,7 +223,7 @@ exports.updateOrderStatus = (req, res) => {
       // Rollback stock
       const rollbackPromises = itemRows.map(item => {
         return new Promise((resolve, reject) => {
-          const rollbackSql = `UPDATE products SET stock = stock + ? WHERE id = ?`;
+          const rollbackSql = `UPDATE products SET stock = stock + ? WHERE product_id = ?`;
           connection.query(rollbackSql, [item.quantity, item.product_id], (err2) => {
             if (err2) reject(err2);
             else resolve();
