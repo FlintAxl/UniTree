@@ -9,6 +9,7 @@ const adminRoutes = require('./routes/admin');
 const petRoutes = require('./routes/pet'); 
 const product = require('./routes/product')
 const order = require('./routes/order')
+const review = require('./routes/review')
 app.use(cors())
 app.use(express.json())
 app.use('/images', express.static(path.join(__dirname, 'images')))
@@ -20,6 +21,7 @@ app.use('/api/v1', user);
 app.use('/api/v1', petRoutes);
 app.use('/api/v1', order);
 app.use('/admin', adminRoutes);
+app.use('/api/v1', review);
 
 async function clearTokens() {
   try {

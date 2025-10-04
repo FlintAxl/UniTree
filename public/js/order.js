@@ -105,3 +105,91 @@ function markAsReceived(orderId) {
     }
   });
 }
+
+
+function openReviewModal(orderId) {
+  $.ajax({
+    url: `${url}api/v1/order-items/${orderId}?user_id=${userId}`,
+    method: 'GET',
+    success: function (res) {
+      const items = res.data;
+      let html = '';
+
+      items.forEach(item => {
+        const hasReview = item.rating !== null && item.comment !== null;
+
+        html += `
+          <div class="form-group border rounded p-3 mb-3">
+            <h5>${item.product_name}</h5>
+            <input type="hidden" class="product-id" value="${item.product_id}" />
+            <input type="hidden" class="order-id" value="${orderId}" />
+            <input type="hidden" class="user-id" value="${userId}" />
+            
+            ${hasReview ? `
+              <p><strong>Your Rating:</strong> ${item.rating}</p>
+              <p><strong>Your Comment:</strong> ${item.comment}</p>
+              <div class="alert alert-info">You have already reviewed this item.</div>
+            ` : `
+              <label for="rating-${item.product_id}">Rating (1-5)</label>
+              <input type="number" id="rating-${item.product_id}" class="form-control rating-input" min="1" max="5" required>
+
+              <label for="comment-${item.product_id}">Comment</label>
+              <textarea id="comment-${item.product_id}" class="form-control comment-input" required></textarea>
+            `}
+          </div>
+        `;
+      });
+
+      $('#reviewModalBody').html(html);
+
+      $('#submitReviewBtn').off('click').on('click', function () {
+        const reviews = [];
+
+        $('#reviewModalBody .form-group').each(function () {
+          // Skip items with existing reviews
+          if ($(this).find('.rating-input').length === 0) return;
+
+          const product_id = $(this).find('.product-id').val();
+          const order_id = $(this).find('.order-id').val();
+          const user_id = $(this).find('.user-id').val();
+          const rating = $(this).find('.rating-input').val();
+          const comment = $(this).find('.comment-input').val();
+
+          if (!rating || !comment) return;
+
+          reviews.push({
+            product_id,
+            order_id,
+            user_id,
+            rating,
+            comment
+          });
+        });
+
+        if (reviews.length === 0) {
+          return Swal.fire('Notice', 'No new reviews to submit.', 'info');
+        }
+
+        $.ajax({
+          url: `${url}api/v1/reviews`,
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ reviews }),
+          success: function () {
+            Swal.fire('Thank you!', 'Your reviews have been submitted.', 'success');
+            $('#reviewModal').modal('hide');
+            $('#customerOrdersTable').DataTable().ajax.reload();
+          },
+          error: function () {
+            Swal.fire('Error', 'Failed to submit reviews.', 'error');
+          }
+        });
+      });
+
+      $('#reviewModal').modal('show');
+    },
+    error: function () {
+      Swal.fire('Error', 'Failed to fetch order items.', 'error');
+    }
+  });
+}

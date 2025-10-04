@@ -4,6 +4,7 @@ $(document).ready(function () {
   initUsersTable();
   initPetsTable();
   initOrdersTable();
+  initReviewsTable(); 
 });
 
 // ===================
@@ -388,6 +389,65 @@ function updateOrderStatus(orderId, newStatus) {
     error: () => {
       Swal.fire('Error', 'Failed to update order status', 'error');
       $('#ordersTable').DataTable().ajax.reload();
+    }
+  });
+}
+
+
+
+function initReviewsTable() {
+  $('#reviewsTable').DataTable({
+    ajax: {
+      url: `${url}api/v1/reviews/all`,
+      dataSrc: 'data',
+      headers: {
+      Authorization: 'Bearer ' + sessionStorage.getItem('access_token') // 👈 ADD THIS
+    },
+    },
+    columns: [
+      { data: 'review_id' },
+      { data: 'user_name' },
+      { data: 'product_name' },
+      { data: 'order_id' },
+      { data: 'rating' },
+      { data: 'comment' },
+      { data: 'created_at', render: date => new Date(date).toLocaleString() },
+      {
+        data: null,
+        render: function (data) {
+          return `<button class="btn btn-sm btn-danger" onclick="deleteReview(${data.review_id})">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>`;
+        }
+      }
+    ]
+  });
+}
+
+// Delete review function
+function deleteReview(id) {
+  Swal.fire({
+    title: 'Delete this review?',
+    text: 'This action cannot be undone!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it'
+  }).then(result => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: `${url}api/v1/reviews/${id}`,
+        headers: {
+      Authorization: 'Bearer ' + sessionStorage.getItem('access_token') // 👈 ADD THIS
+    },
+        method: 'DELETE',
+        success: function () {
+          Swal.fire('Deleted!', 'Review has been deleted.', 'success');
+          $('#reviewsTable').DataTable().ajax.reload();
+        },
+        error: function () {
+          Swal.fire('Error', 'Failed to delete review.', 'error');
+        }
+      });
     }
   });
 }

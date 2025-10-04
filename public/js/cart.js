@@ -1,7 +1,23 @@
+// =================== USER-SPECIFIC CART ===================
 
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
+function getCartKey() {
+    const userId = JSON.parse(sessionStorage.getItem('userId'));
+    return userId ? `cart_${userId}` : 'cart_guest';
+}
 
-// Add product to cart
+function getCart() {
+    const cart = localStorage.getItem(getCartKey());
+    return cart ? JSON.parse(cart) : [];
+}
+
+function saveCart(cart) {
+    localStorage.setItem(getCartKey(), JSON.stringify(cart));
+}
+
+// =================== INITIALIZE CART ===================
+let cart = getCart();
+
+// =================== ADD TO CART ===================
 function addToCart(product, redirectToCart = false) {
     const token = sessionStorage.getItem('access_token');
     if (!token) {
@@ -27,7 +43,7 @@ function addToCart(product, redirectToCart = false) {
         });
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
+    saveCart(cart);
     updateCartCount();
     showToast(`${product.name} added to cart`);
 
@@ -38,13 +54,14 @@ function addToCart(product, redirectToCart = false) {
     }
 }
 
-// // Update cart count
-// function updateCartCount() {
-//     const count = cart.reduce((total, item) => total + item.quantity, 0);
-//     $('.cart-count').text(count);
-// }
+// =================== UPDATE CART COUNT ===================
+function updateCartCount() {
+    const count = cart.reduce((total, item) => total + item.quantity, 0);
+    $('.cart-count').text(count);
+    return count;
+}
 
-// Toast notifications
+// =================== SHOW TOAST ===================
 function showToast(message, isError = false) {
     const toast = $(`
         <div class="toast ${isError ? 'error' : ''}">
@@ -62,7 +79,7 @@ function showToast(message, isError = false) {
     }, 3000);
 }
 
-// Handle Add to Cart button
+// =================== HANDLE BUTTONS ===================
 function handleAddToCart(e) {
     e.stopPropagation();
     e.preventDefault();
@@ -78,14 +95,13 @@ function handleAddToCart(e) {
     addToCart(product, false);
 }
 
-// Event listeners
 $(document).on('click', '.btn-add-cart', handleAddToCart);
 
 $(document).on('click', '.btn-buy-now', function(e) {
     e.stopPropagation();
     e.preventDefault();
 
-    const $button = $(e.currentTarget);
+    const $button = $(this);
     const product = {
         id: $button.data('id'),
         name: $button.data('name'),
@@ -95,24 +111,15 @@ $(document).on('click', '.btn-buy-now', function(e) {
     addToCart(product, true);
 });
 
-//================= CART.HTML =================//
-
-// Update cart count
-function updateCartCount() {
-    const count = cart.reduce((total, item) => total + item.quantity, 0);
-    $('.cart-count').text(count);
-    return count;
-}
-
-// Format price
+// =================== CART.HTML FUNCTIONS ===================
 function formatPrice(price) {
     return '₱' + parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }
 
-// Render cart items
 function renderCart() {
     const $cartItems = $('#cartItems');
-    
+    cart = getCart();
+
     if (cart.length === 0) {
         $cartItems.html(`
             <div class="empty-cart">
@@ -130,20 +137,17 @@ function renderCart() {
         $('#checkoutBtn').prop('disabled', true);
         return;
     }
-    
+
     let itemsHtml = '';
     let subtotal = 0;
-    
+
     cart.forEach((item, index) => {
         const itemTotal = item.price * item.quantity;
         subtotal += itemTotal;
-        
+
         itemsHtml += `
 <div class="cart-item" data-index="${index}">
-    <img src="${item.image || 'images/placeholder.jpg'}" 
-         alt="${item.name}" 
-         class="cart-item-image" />
-
+    <img src="${item.image || 'images/placeholder.jpg'}" alt="${item.name}" class="cart-item-image" />
     <div class="cart-item-details">
         <h3>${item.name}</h3>
         <p>${item.description || ''}</p>
@@ -157,58 +161,50 @@ function renderCart() {
     <button class="remove-btn" title="Remove item">×</button>
     <div class="cart-item-total">${formatPrice(itemTotal)}</div>
 </div>`;
-
     });
-    
+
     $cartItems.html(itemsHtml);
-    
     $('#subtotal').text(formatPrice(subtotal));
     $('#total').text(formatPrice(subtotal));
-    
     $('#checkoutBtn').prop('disabled', false);
 }
 
-// Update quantity
+// =================== UPDATE QUANTITY ===================
 function updateQuantity(index, newQuantity) {
     if (newQuantity < 1) newQuantity = 1;
     cart[index].quantity = newQuantity;
-    localStorage.setItem('cart', JSON.stringify(cart));
+    saveCart(cart);
     renderCart();
     updateCartCount();
 }
 
-// Remove item
+// =================== REMOVE ITEM ===================
 function removeItem(index) {
     cart.splice(index, 1);
-    localStorage.setItem('cart', JSON.stringify(cart));
+    saveCart(cart);
     renderCart();
     updateCartCount();
 }
 
-// Event listeners
+// =================== EVENT LISTENERS ===================
 $(document)
     .on('click', '.quantity-btn', function() {
         const $item = $(this).closest('.cart-item');
         const index = $item.data('index');
-        const $input = $item.find('.quantity-input');
-        let quantity = parseInt($input.val());
-        
-        if ($(this).hasClass('increase')) {
-            quantity++;
-        } else if ($(this).hasClass('decrease')) {
-            quantity--;
-            if (quantity < 1) quantity = 1;
-        }
-        
-        $input.val(quantity);
+        let quantity = parseInt($item.find('.quantity-input').val());
+
+        if ($(this).hasClass('increase')) quantity++;
+        else if ($(this).hasClass('decrease')) quantity--;
+
+        if (quantity < 1) quantity = 1;
+        $item.find('.quantity-input').val(quantity);
         updateQuantity(index, quantity);
     })
     .on('click', '.remove-btn', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        const $item = $(this).closest('.cart-item');
-        const index = $item.data('index');
-        
+        const index = $(this).closest('.cart-item').data('index');
+
         Swal.fire({
             title: 'Remove Item?',
             text: "Are you sure you want to remove this item?",
@@ -217,88 +213,71 @@ $(document)
             confirmButtonText: 'Yes, remove it',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
-                removeItem(index);
-            }
+            if (result.isConfirmed) removeItem(index);
         });
     })
     .on('change', '.quantity-input', function() {
         const $item = $(this).closest('.cart-item');
         const index = $item.data('index');
         let quantity = parseInt($(this).val());
-        
-        if (isNaN(quantity) || quantity < 1) {
-            quantity = 1;
-            $(this).val(1);
-        }
-        
+
+        if (isNaN(quantity) || quantity < 1) quantity = 1;
+        $(this).val(quantity);
         updateQuantity(index, quantity);
     });
 
+// =================== DOCUMENT READY ===================
 $(document).ready(function() {
+    cart = getCart();
     updateCartCount();
     renderCart();
-    
-    // Checkout button
-    // Checkout button
-$('#checkoutBtn').click(function() {
-    checkout();
+
+    $('#checkoutBtn').click(checkout);
 });
 
-// Checkout function
+// =================== CHECKOUT FUNCTION ===================
 function checkout() {
-  const userId = JSON.parse(sessionStorage.getItem('userId'));
-  cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const userId = JSON.parse(sessionStorage.getItem('userId'));
+    cart = getCart();
 
+    if (!userId) return Swal.fire('Login required');
+    if (!cart.length) return Swal.fire('Cart is empty');
 
+    const totalAmount = cart.reduce((sum, c) => sum + (c.price * c.quantity), 0);
 
-  if (!userId) return Swal.fire('Login required');
-  if (!cart.length) return Swal.fire('Cart is empty');
+    const payload = {
+        user_id: userId,
+        total_amount: totalAmount,
+        items: cart.map(c => ({
+            product_id: c.id,
+            quantity: c.quantity,
+            price: c.price
+        }))
+    };
 
-  // Calculate total amount from cart
-  const totalAmount = cart.reduce((sum, c) => sum + (c.price * c.quantity), 0);
+    $.ajax({
+        method: 'POST',
+        url: `${url}api/v1/order`,
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: function () {
+            localStorage.removeItem(getCartKey());
+            cart = [];
+            renderCart();
+            updateCartCount();
 
-  const payload = {
-    user_id: userId,   // ✅ matches orders.user_id
-    total_amount: totalAmount, // ✅ matches orders.total_amount
-    items: cart.map(c => ({
-      product_id: c.id, // ✅ matches order_items.product_id
-      quantity: c.quantity,
-      price: c.price             // ✅ matches order_items.price
-    }))
-  };
-
-  $.ajax({
-    method: 'POST',
-    url: `${url}api/v1/order`,   // ✅ adjust if your backend route differs
-    contentType: 'application/json',
-    data: JSON.stringify(payload),
-    success: function (data) {
-  // Clear cart first
-  localStorage.removeItem('cart');
-  cart = [];
-  renderCart();
-  updateCartCount();
-
-  // Then show success popup
-  Swal.fire({
-    icon: 'success',
-    title: 'Thank You for Ordering!',
-    text: 'Your order has been placed successfully.',
-    confirmButtonText: 'Continue Shopping',
-    confirmButtonColor: '#8B5E3C',
-    background: '#fff8f0',
-    color: '#5c4433'
-  }).then(() => {
-    // Optional: redirect back to products page
-    window.location.href = 'products.html';
-  });
+            Swal.fire({
+                icon: 'success',
+                title: 'Thank You for Ordering!',
+                text: 'Your order has been placed successfully.',
+                confirmButtonText: 'Continue Shopping',
+                confirmButtonColor: '#8B5E3C',
+                background: '#fff8f0',
+                color: '#5c4433'
+            }).then(() => window.location.href = 'products.html');
+        },
+        error: function (xhr) {
+            Swal.fire('Order failed', xhr.responseText || 'Server error', 'error');
+        }
+    });
 }
-,
-    error: function (xhr) {
-      Swal.fire('Order failed', xhr.responseText || 'Server error', 'error');
-    }
-  });
-}
-
-});

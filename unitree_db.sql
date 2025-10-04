@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 03, 2025 at 04:27 PM
+-- Generation Time: Oct 04, 2025 at 03:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -76,6 +76,23 @@ CREATE TABLE `orders` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `user_id`, `total_amount`, `date_placed`, `date_shipped`, `status`, `created_at`) VALUES
+(16, 7, 0.00, '2025-10-03 23:25:25', NULL, 'cancelled', '2025-10-03 15:25:25'),
+(17, 7, 0.00, '2025-10-04 16:06:51', NULL, 'cancelled', '2025-10-04 08:06:51'),
+(18, 7, 0.00, '2025-10-04 16:20:50', NULL, 'cancelled', '2025-10-04 08:20:50'),
+(19, 7, 0.00, '2025-10-04 16:44:57', NULL, 'received', '2025-10-04 08:44:57'),
+(20, 7, 0.00, '2025-10-04 16:45:54', NULL, 'cancelled', '2025-10-04 08:45:54'),
+(21, 7, 0.00, '2025-10-04 19:27:10', NULL, 'cancelled', '2025-10-04 11:27:10'),
+(22, 7, 0.00, '2025-10-04 19:29:58', NULL, 'pending', '2025-10-04 11:29:58'),
+(23, 7, 0.00, '2025-10-04 19:32:00', NULL, 'pending', '2025-10-04 11:32:00'),
+(24, 5, 0.00, '2025-10-04 19:38:34', NULL, 'pending', '2025-10-04 11:38:34'),
+(25, 7, 0.00, '2025-10-04 19:49:42', NULL, 'pending', '2025-10-04 11:49:42'),
+(26, 7, 0.00, '2025-10-04 20:53:48', NULL, 'pending', '2025-10-04 12:53:48');
+
 -- --------------------------------------------------------
 
 --
@@ -89,6 +106,21 @@ CREATE TABLE `order_items` (
   `quantity` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`, `price`) VALUES
+(21, 17, 21, 1, 250.00),
+(23, 18, 21, 1, 250.00),
+(25, 19, 21, 1, 250.00),
+(28, 22, 20, 1, 20.00),
+(29, 23, 15, 1, 300.00),
+(30, 23, 17, 2, 180.00),
+(31, 24, 11, 1, 1.00),
+(32, 25, 43, 3, 1.00),
+(33, 26, 43, 2, 1.00);
 
 -- --------------------------------------------------------
 
@@ -189,19 +221,17 @@ INSERT INTO `products` (`product_id`, `name`, `description`, `price`, `stock`, `
 (7, 'External SSD 1TB', 'Portable high-speed external SSD with USB 3.2 interface.', 5999.00, 12, NULL, '2025-09-25 05:19:07', 17),
 (8, 'Webcam 1080p', 'Full HD webcam with built-in microphone and privacy cover.', 1299.00, 25, NULL, '2025-09-25 05:19:07', 17),
 (9, 'Portable Speaker', 'Compact Bluetooth speaker with waterproof design and 12-hour playtime.', 1799.00, 30, NULL, '2025-09-25 05:19:07', 17),
-(11, 'alvin1', 'sas', 1.00, 1, NULL, '2025-09-26 11:41:09', 20),
+(11, 'alvin1', 'sas', 1.00, 0, NULL, '2025-09-26 11:41:09', 20),
 (12, 'as', 'asasaasa', 250.00, 2, 3, '2025-09-26 12:20:30', 20),
 (13, 'poketree', 'poketree as your companion', 200.00, 22, 2, '2025-09-27 12:45:20', 53),
 (14, 'mouse', 'mouseee', 300.00, 20, 1, '2025-09-27 13:18:55', 53),
-(15, 'ewan', 'ewan', 300.00, 20, 3, '2025-09-27 13:28:55', 53),
-(17, 'earphones', 'quality earphones', 180.00, 20, 1, '2025-09-27 13:40:03', 54),
+(15, 'ewan', 'ewan', 300.00, 19, 3, '2025-09-27 13:28:55', 53),
+(17, 'earphones', 'quality earphones', 180.00, 18, 1, '2025-09-27 13:40:03', 54),
 (18, 'charger', 'charger', 100.00, 5, 1, '2025-09-27 13:41:17', 54),
 (19, 'bracelet', 'bracelet design for besties', 100.00, 30, 2, '2025-09-28 13:48:53', 56),
-(20, 'ballpen', 'basta ballpen', 20.00, 50, 3, '2025-09-29 01:36:42', 58),
-(21, 'saas', 'saas', 250.00, 123, NULL, '2025-10-02 05:32:04', 60),
-(38, 'q', 'q', 1.00, 1, 2, '2025-10-02 07:01:24', NULL),
-(39, 'ashly1', 'q', 11.00, 11, 2, '2025-10-02 07:01:47', NULL),
-(40, 'a', 'a', 1.00, 1, 2, '2025-10-02 07:30:29', NULL);
+(20, 'ballpen', 'basta ballpen', 20.00, 49, 3, '2025-09-29 01:36:42', 58),
+(21, 'saas', 'saas', 250.00, 122, NULL, '2025-10-02 05:32:04', 60),
+(43, 'aircon', 'air', 1.00, 7, 2, '2025-10-04 11:48:41', 5);
 
 -- --------------------------------------------------------
 
@@ -227,9 +257,25 @@ INSERT INTO `product_images` (`image_id`, `product_id`, `image_path`, `uploaded_
 (7, 21, 'images/1759383124711.jpg', '2025-10-02 05:32:04'),
 (8, 21, 'images/1759383124712.jpg', '2025-10-02 05:32:04'),
 (9, 21, 'images/1759383124713.jpg', '2025-10-02 05:32:04'),
-(10, 39, 'images/1759388507045.jpg', '2025-10-02 07:01:47'),
-(11, 39, 'images/1759388507052.jpg', '2025-10-02 07:01:47'),
-(12, 39, 'images/1759388507052.jpg', '2025-10-02 07:01:47');
+(15, 43, 'images/1759578521246.jpg', '2025-10-04 11:48:41');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reviews`
+--
+
+CREATE TABLE `reviews` (
+  `review_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `comment` text NOT NULL,
+  `rating` tinyint(3) UNSIGNED NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -289,9 +335,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `role`, `created_at`, `token`, `first_name`, `last_name`, `age`, `birthday`, `address`, `gender`, `profile_picture`) VALUES
-(5, 'flint', 'flintaxl.celetaria@gmail.com', '$2b$10$nNlIhzJA9ja1ektzbApOee2U2zdk7tA7s.vZyZ3RKvtitq6NKUzuG', 'admin', '2025-09-23 02:12:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(5, 'flint', 'flintaxl.celetaria@gmail.com', '$2b$10$nNlIhzJA9ja1ektzbApOee2U2zdk7tA7s.vZyZ3RKvtitq6NKUzuG', 'admin', '2025-09-23 02:12:36', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTk1ODMxNTl9.b6ClFmo0_nSZoScOhnvs2GYJN_dr8pW3XWm3AdQVtzg', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (6, 'bea', 'bea@gmail.com', '$2b$10$VvcXKPSLhVkcrT/Nb5a36eRquGTfFRO0sfv3oJkkMHwVaFpqBS0qG', 'seller', '2025-09-23 02:28:37', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(7, 'ash', 'ash@gmail.com', '$2b$10$Th0GH9.IPiSb5J.uWIJmaeSR.zSHRFPdsvJo6Lq3Rsr4lWrt2kURm', 'customer', '2025-09-23 02:33:36', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo3LCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NTk0OTk0NjN9.PoI_FM6AXN1-AkXWSgRO6iBtQ5dDspyW_h4g4OrLd2w', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(7, 'ash', 'ash@gmail.com', '$2b$10$Th0GH9.IPiSb5J.uWIJmaeSR.zSHRFPdsvJo6Lq3Rsr4lWrt2kURm', 'customer', '2025-09-23 02:33:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (10, 'gab1', 'gab@gmail.com', '$2b$10$.GsVcQs.dKSklYWBIFYfb.B6SM0UeToTyFhl2VhcWs7Gjt2vw39LK', 'customer', '2025-09-23 04:32:42', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (12, 'a', 'a@gmail.com', '$2b$10$R5Rphq8YYSQMeWhsnbb/TeS1ISchse29gKt4aJCbO/LYs23YnQZZm', 'customer', '2025-09-23 04:35:50', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (15, 'kim', 'kim@gmail.com', '$2b$10$VU45G1S23LalvwTpnmLRAOGeVzyHWRPEvKaLUrIL/dGc4rmcRGsDO', 'seller', '2025-09-23 14:09:37', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
@@ -388,6 +434,15 @@ ALTER TABLE `product_images`
   ADD KEY `product_id` (`product_id`);
 
 --
+-- Indexes for table `reviews`
+--
+ALTER TABLE `reviews`
+  ADD PRIMARY KEY (`review_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `order_id` (`order_id`);
+
+--
 -- Indexes for table `rewards`
 --
 ALTER TABLE `rewards`
@@ -431,13 +486,13 @@ ALTER TABLE `listings`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `pets`
@@ -449,13 +504,19 @@ ALTER TABLE `pets`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT for table `reviews`
+--
+ALTER TABLE `reviews`
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `rewards`
@@ -518,6 +579,14 @@ ALTER TABLE `products`
 --
 ALTER TABLE `product_images`
   ADD CONSTRAINT `product_images_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `reviews`
+--
+ALTER TABLE `reviews`
+  ADD CONSTRAINT `reviews_order_fk` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `reviews_product_fk` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `reviews_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `rewards`
