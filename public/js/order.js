@@ -91,7 +91,7 @@ function markAsReceived(orderId) {
     if (result.isConfirmed) {
       $.ajax({
         method: 'PATCH',
-        url: `${url}api/v1/orders/update-status`,
+        url: `${url}admin/orders/update-status`,
         contentType: 'application/json',
         data: JSON.stringify({ order_id: orderId, status: 'received' }),
         success: function () {
