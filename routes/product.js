@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const upload = require('../utils/multer');
-
+const authMiddleware = require('../Middlewares/auth');
 const { 
   getAllProducts,
   getSellerProducts,
@@ -63,10 +63,10 @@ router.get('/categories', getAllCategories);
 
 
 // Admin product management
-router.get('/products/admin/:id', verifyToken, verifyAdmin, getSingleProduct);
-router.post('/products/admin', verifyToken, verifyAdmin, upload.array('image', 10), createAdminProduct);
-router.put('/products/admin/:id', verifyToken, verifyAdmin, upload.array('image', 10), updateAdminProduct);
-router.delete('/products/admin/:id', verifyToken, verifyAdmin, deleteAdminProduct);
+router.get('/products/admin/:id',authMiddleware, verifyToken, verifyAdmin, getSingleProduct);
+router.post('/products/admin',authMiddleware, verifyToken, verifyAdmin, upload.array('image', 10), createAdminProduct);
+router.put('/products/admin/:id',authMiddleware, verifyToken, verifyAdmin, upload.array('image', 10), updateAdminProduct);
+router.delete('/products/admin/:id',authMiddleware, verifyToken, verifyAdmin, deleteAdminProduct);
 
 
 // ==========================

@@ -142,7 +142,7 @@ function renderCart() {
 <div class="cart-item" data-index="${index}">
     <img src="${item.image || 'images/placeholder.jpg'}" 
          alt="${item.name}" 
-         class="cart-item-image" /
+         class="cart-item-image" />
 
     <div class="cart-item-details">
         <h3>${item.name}</h3>

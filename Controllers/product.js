@@ -357,6 +357,7 @@ exports.getAllCategories = (req, res) => {
 
 
 // Create product (Admin)
+// Create product (Admin)
 exports.createAdminProduct = (req, res) => {
   const { name, description, price, stock, category_id } = req.body;
   const images = req.files || [];
@@ -365,11 +366,17 @@ exports.createAdminProduct = (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
+  // Make sure req.user exists and has user_id
+  const adminId = req.user?.user_id; // you should have a middleware that sets req.user after authentication
+  if (!adminId) {
+    return res.status(401).json({ error: 'Unauthorized: Admin ID not found' });
+  }
+
   const insertSql = `
     INSERT INTO products (name, description, price, stock, category_id, seller_id)
-    VALUES (?, ?, ?, ?, ?, NULL)
+    VALUES (?, ?, ?, ?, ?, ?)
   `;
-  const values = [name, description, parseFloat(price), parseInt(stock), category_id || null];
+  const values = [name, description, parseFloat(price), parseInt(stock), category_id || null, adminId];
 
   connection.execute(insertSql, values, (err, result) => {
     if (err) {

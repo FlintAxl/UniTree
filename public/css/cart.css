@@ -161,18 +161,6 @@
             overflow: hidden;
         }
         
-        .cart-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, transparent 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
         .cart-item:hover::before {
             opacity: 1;
         }
