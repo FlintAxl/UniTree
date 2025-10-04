@@ -1,0 +1,140 @@
+<!-- Header -->
+<header class="header">
+    <nav class="nav">
+        <div class="logo">UniTree</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Shop</a></li>
+            <li><a href="#" style="color: #999; cursor: not-allowed;" title="Coming soon">Reviews</a></li>
+            <li><a href="#" style="color: #999; cursor: not-allowed;" title="Coming soon">Pet</a></li>
+        </ul>
+        <div class="nav-actions">
+            <div class="search-box">
+                <input type="text" placeholder="Search products..." id="searchInput">
+                <span></span>
+            </div>
+            <a href="cart.html" class="cart-icon" id="cartIcon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+            </a>
+            <!-- Join Now Button (shown when not logged in) -->
+            <div class="dropdown" id="joinNowSection">
+                <button class="btn btn-primary dropdown-toggle" id="joinNowBtn">Join Now</button>
+                <div class="dropdown-menu" id="joinDropdown">
+                    <a href="login.html">Log In</a>
+                    <a href="register.html">Register</a>
+                </div>
+            </div>
+            <!-- User Profile (shown when logged in) -->
+            <div class="dropdown" id="userProfileSection" style="display: none;">
+                <button class="btn btn-primary dropdown-toggle" id="userProfileBtn">
+                    <i class="fas fa-user"></i>
+                    <span id="usernameDisplay"></span>
+                </button>
+                <div class="dropdown-menu" id="userDropdown">
+                    <a href="profile.html">Profile</a>
+                    <a href="orders.html">My Orders</a>
+                    <a href="settings.html">Settings</a>
+                    <a href="#" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<script>
+// Header initialization script
+(function() {
+    // Update cart count
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const count = cart.reduce((total, item) => total + item.quantity, 0);
+        document.querySelector('.cart-count').textContent = count;
+    }
+
+    // Check if user is logged in and update header
+    function updateHeaderAuth() {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        const joinNowSection = document.getElementById('joinNowSection');
+        const userProfileSection = document.getElementById('userProfileSection');
+        const usernameDisplay = document.getElementById('usernameDisplay');
+
+        if (currentUser && currentUser.username) {
+            // User is logged in
+            joinNowSection.style.display = 'none';
+            userProfileSection.style.display = 'block';
+            usernameDisplay.textContent = currentUser.username;
+        } else {
+            // User is not logged in
+            joinNowSection.style.display = 'block';
+            userProfileSection.style.display = 'none';
+        }
+    }
+
+    // Logout functionality
+    function setupLogout() {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            });
+        }
+    }
+
+    // Dropdown toggle functionality
+    function setupDropdowns() {
+        // Join Now dropdown
+        const joinNowBtn = document.getElementById('joinNowBtn');
+        const joinDropdown = document.getElementById('joinDropdown');
+        
+        if (joinNowBtn) {
+            joinNowBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                joinDropdown.classList.toggle('show');
+            });
+        }
+
+        // User Profile dropdown
+        const userProfileBtn = document.getElementById('userProfileBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        if (userProfileBtn) {
+            userProfileBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function() {
+            if (joinDropdown) joinDropdown.classList.remove('show');
+            if (userDropdown) userDropdown.classList.remove('show');
+        });
+    }
+
+    // Initialize everything when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+            updateHeaderAuth();
+            setupDropdowns();
+            setupLogout();
+        });
+    } else {
+        updateCartCount();
+        updateHeaderAuth();
+        setupDropdowns();
+        setupLogout();
+    }
+
+    // Listen for storage changes (when user logs in/out in another tab)
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'currentUser' || e.key === 'cart') {
+            updateCartCount();
+            updateHeaderAuth();
+        }
+    });
+})();
+</script>
