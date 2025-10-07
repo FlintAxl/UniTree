@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Seller Dashboard - UniTree</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Bootstrap 4 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" crossorigin="anonymous" />
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css" crossorigin="anonymous" />
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Bootstrap 4 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.min.js"></script>
+    <!-- Config and User JS -->
+    <script src="js/config.js"></script>
+    <script src="js/user.js"></script>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            min-height: 100vh;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 80px);
+            padding: 20px 0;
+        }
+
+        .dashboard-container {
+            background: rgba(74, 222, 128, 0.1);
+            padding: 2rem;
+            border-radius: 25px;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            margin-top: 10px;
+        }
+
+        .welcome-header {
+            color: #4ade80;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 2rem;
+            text-align: left;
+        }
+
+        .welcome-subtitle {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            text-align: left;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.15);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4ade80;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: rgba(74, 222, 128, 0.05);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            color: #4ade80;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+        }
+
+        /* Timeframe Selector */
+        .timeframe-selector {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .timeframe-btn {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timeframe-btn.active {
+            background: rgba(74, 222, 128, 0.3);
+            border-color: #4ade80;
+        }
+
+        .timeframe-btn:hover {
+            background: rgba(74, 222, 128, 0.2);
+            border-color: #4ade80;
+        }
+
+        .no-data-message {
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            padding: 2rem;
+            font-style: italic;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1.5rem;
+                margin: 10px;
+            }
+            
+            .welcome-header {
+                font-size: 1.5rem;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-wrapper {
+                height: 300px;
+            }
+
+            .timeframe-selector {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+        }
+            .seller-header {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(74, 222, 128, 0.2);
+    }
+
+    .seller-header .logo {
+      color: #4ade80;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .seller-header .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: white;
+    }
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+    <script>
+        $(document).ready(function() {
+          // ✅ Load header.html dynamically
+          $('#header').load('header.html', function(response, status, xhr) {
+            if (status === 'error') {
+              console.error('Failed to load header:', xhr.statusText);
+            } else {
+              console.log('Header loaded successfully.');
+            }
+          });
+        });
+        </script>
+        
+    
+    
+    <div class="dashboard-wrapper">
+        <div class="dashboard-container">
+            <h1 class="welcome-header">Welcome, <span id="sellerName">Seller</span>!</h1>
+            <p class="welcome-subtitle">Manage your products and analyze your sales performance</p>
+            
+            <!-- Timeframe Selector -->
+            <div class="timeframe-selector">
+                <button class="timeframe-btn active" data-timeframe="week">Last Week</button>
+                <button class="timeframe-btn" data-timeframe="month">Last Month</button>
+                <button class="timeframe-btn" data-timeframe="year">Last Year</button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRevenue">₱0.00</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalSold">0</div>
+                    <div class="stat-label">Items Sold</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalOrders">0</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgOrderValue">₱0.00</div>
+                    <div class="stat-label">Avg Order Value</div>
+                </div>
+            </div>
+
+            <!-- Product Sales Chart -->
+            <div class="chart-container">
+                <h3 class="chart-title">Product Sales Performance</h3>
+                <div class="chart-wrapper">
+                    <canvas id="productSalesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Daily Sales Chart -->
+            <div class="chart-container">
+                <h3 class="chart-title">Daily Sales Trend</h3>
+                <div class="chart-wrapper">
+                    <canvas id="dailySalesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Category Sales Chart -->
+            <div class="chart-container">
+                <h3 class="chart-title">Sales by Category</h3>
+                <div class="chart-wrapper">
+                    <canvas id="categorySalesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let productChart, dailyChart, categoryChart;
+        let currentTimeframe = 'month';
+
+        // Load header content
+        fetch("/header.html")
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById("header").innerHTML = data;
+            })
+            .catch(err => console.log('Header load error:', err));
+
+        $(document).ready(function() {
+            const userRole = sessionStorage.getItem('role');
+            const token = sessionStorage.getItem('access_token');
+            // FIXED: Changed from 'user_id' to 'userId' to match user.js
+            const sellerId = sessionStorage.getItem('userId');
+            // FIXED: Changed from 'username' to 'user_name' to match user.js
+            const username = sessionStorage.getItem('user_name');
+            
+            console.log('Seller Dashboard Initialized');
+            console.log('User Role:', userRole);
+            console.log('Token exists:', !!token);
+            console.log('Seller ID:', sellerId);
+            console.log('Seller ID type:', typeof sellerId);
+            console.log('All sessionStorage:', {
+                role: userRole,
+                userId: sellerId,
+                user_name: username,
+                token: token ? 'exists' : 'missing'
+            });
+            
+            // Set seller name
+            if (username) {
+                $('#sellerName').text(username);
+            }
+            
+            if (!token) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Access Denied',
+                    text: 'Please login to access the seller dashboard.',
+                    showConfirmButton: true
+                }).then(() => {
+                    window.location.href = 'login.html';
+                });
+                return;
+            }
+            
+            if (userRole !== 'seller') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Access Denied',
+                    text: 'This page is only accessible to sellers.',
+                    showConfirmButton: true
+                }).then(() => {
+                    window.location.href = 'index.html';
+                });
+                return;
+            }
+
+            // Validate seller ID before loading analytics
+            if (!sellerId || sellerId === 'null' || sellerId === 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Missing Seller ID',
+                    text: 'Your seller ID is not set. Please login again.',
+                    showConfirmButton: true
+                }).then(() => {
+                    sessionStorage.clear();
+                    window.location.href = 'login.html';
+                });
+                return;
+            }
+
+            // Load initial analytics data
+            loadAnalytics(sellerId, currentTimeframe);
+
+            // Handle timeframe changes
+            $('.timeframe-btn').click(function() {
+                $('.timeframe-btn').removeClass('active');
+                $(this).addClass('active');
+                currentTimeframe = $(this).data('timeframe');
+                loadAnalytics(sellerId, currentTimeframe);
+            });
+        });
+
+        function loadAnalytics(sellerId, timeframe) {
+            // Show loading state
+            showLoading();
+
+            // Make sure the URL is constructed correctly
+            const apiUrl = `${url}api/v1/analytics/${sellerId}?timeframe=${timeframe}`;
+            console.log('Loading analytics from:', apiUrl);
+
+            $.ajax({
+                url: apiUrl,
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('access_token')}`
+                },
+                success: function(response) {
+                    console.log('Analytics response received:', response);
+                    if (response.success) {
+                        updateStats(response.data.summary);
+                        updateCharts(response.data);
+                    } else {
+                        console.error('Response indicates failure:', response);
+                        showError('Failed to load analytics data');
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Analytics load error:', xhr);
+                    console.error('Status:', xhr.status);
+                    console.error('Response:', xhr.responseJSON);
+                    
+                    let errorMsg = 'Failed to load analytics data';
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMsg += ': ' + xhr.responseJSON.error;
+                    } else if (xhr.statusText) {
+                        errorMsg += ': ' + xhr.statusText;
+                    }
+                    showError(errorMsg);
+                    
+                    // Show empty state
+                    updateStats({
+                        totalRevenue: 0,
+                        totalQuantitySold: 0,
+                        totalOrders: 0
+                    });
+                    updateCharts({
+                        productSales: [],
+                        dailySales: [],
+                        categorySales: []
+                    });
+                }
+            });
+        }
+
+        function updateStats(summary) {
+            console.log('Updating stats with:', summary);
+            $('#totalRevenue').text(`₱${parseFloat(summary.totalRevenue || 0).toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
+            $('#totalSold').text((summary.totalQuantitySold || 0).toLocaleString());
+            $('#totalOrders').text((summary.totalOrders || 0).toLocaleString());
+            
+            const avgOrderValue = summary.totalOrders > 0 ? 
+                (parseFloat(summary.totalRevenue) / summary.totalOrders) : 0;
+            $('#avgOrderValue').text(`₱${avgOrderValue.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
+        }
+
+        function updateCharts(data) {
+            console.log('Updating charts with data:', data);
+            
+            // Destroy existing charts
+            if (productChart) productChart.destroy();
+            if (dailyChart) dailyChart.destroy();
+            if (categoryChart) categoryChart.destroy();
+
+            // Product Sales Chart
+            const productCtx = document.getElementById('productSalesChart').getContext('2d');
+            const hasProductData = data.productSales && data.productSales.length > 0;
+            const productLabels = hasProductData 
+                ? data.productSales.map(item => item.product_name) 
+                : ['No Sales Data'];
+            const productData = hasProductData 
+                ? data.productSales.map(item => parseInt(item.total_sold) || 0) 
+                : [0];
+
+            productChart = new Chart(productCtx, {
+                type: 'bar',
+                data: {
+                    labels: productLabels,
+                    datasets: [{
+                        label: 'Units Sold',
+                        data: productData,
+                        backgroundColor: 'rgba(74, 222, 128, 0.6)',
+                        borderColor: 'rgba(74, 222, 128, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: 'white' }
+                        },
+                        tooltip: {
+                            enabled: hasProductData
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { 
+                                color: 'white',
+                                precision: 0
+                            },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { 
+                                color: 'white',
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+
+            // Daily Sales Chart
+            const dailyCtx = document.getElementById('dailySalesChart').getContext('2d');
+            const hasDailyData = data.dailySales && data.dailySales.length > 0;
+            const dailyLabels = hasDailyData 
+                ? data.dailySales.map(item => new Date(item.sale_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) 
+                : ['No Sales Data'];
+            const dailyRevenue = hasDailyData 
+                ? data.dailySales.map(item => parseFloat(item.daily_revenue) || 0) 
+                : [0];
+
+            dailyChart = new Chart(dailyCtx, {
+                type: 'line',
+                data: {
+                    labels: dailyLabels,
+                    datasets: [{
+                        label: 'Daily Revenue (₱)',
+                        data: dailyRevenue,
+                        borderColor: 'rgba(74, 222, 128, 1)',
+                        backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: 'white' }
+                        },
+                        tooltip: {
+                            enabled: hasDailyData,
+                            callbacks: {
+                                label: function(context) {
+                                    return '₱' + context.parsed.y.toLocaleString('en-PH', {minimumFractionDigits: 2});
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { 
+                                color: 'white',
+                                callback: function(value) {
+                                    return '₱' + value.toLocaleString();
+                                }
+                            },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { 
+                                color: 'white',
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+
+            // Category Sales Chart
+            const categoryCtx = document.getElementById('categorySalesChart').getContext('2d');
+            const hasCategoryData = data.categorySales && data.categorySales.length > 0;
+            
+            if (hasCategoryData) {
+                const categoryLabels = data.categorySales.map(item => item.category_name);
+                const categoryRevenue = data.categorySales.map(item => parseFloat(item.category_revenue) || 0);
+                
+                const colors = [
+                    'rgba(74, 222, 128, 0.8)', 
+                    'rgba(34, 197, 94, 0.8)', 
+                    'rgba(22, 163, 74, 0.8)', 
+                    'rgba(21, 128, 61, 0.8)',
+                    'rgba(16, 185, 129, 0.8)'
+                ];
+
+                categoryChart = new Chart(categoryCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: categoryLabels,
+                        datasets: [{
+                            data: categoryRevenue,
+                            backgroundColor: colors.slice(0, categoryLabels.length),
+                            borderColor: colors.slice(0, categoryLabels.length).map(color => color.replace('0.8', '1')),
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { 
+                                    color: 'white',
+                                    padding: 15
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return `${label}: ₱${value.toLocaleString('en-PH', {minimumFractionDigits: 2})} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Show "No Data" message for category chart
+                categoryChart = new Chart(categoryCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['No Sales Data'],
+                        datasets: [{
+                            data: [1],
+                            backgroundColor: ['rgba(74, 222, 128, 0.3)'],
+                            borderColor: ['rgba(74, 222, 128, 1)'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: 'white' }
+                            },
+                            tooltip: {
+                                enabled: false
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function showLoading() {
+            const charts = ['productSalesChart', 'dailySalesChart', 'categorySalesChart'];
+            charts.forEach(chartId => {
+                const canvas = document.getElementById(chartId);
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Loading...', canvas.width/2, canvas.height/2);
+            });
+        }
+
+        function showError(message) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: message,
+                confirmButtonColor: '#4ade80'
+            });
+        }
+    </script>
+</body>
+</html>
