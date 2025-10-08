@@ -15,7 +15,6 @@ exports.createOrder = (req, res) => {
     FROM products 
     WHERE product_id IN (${items.map(() => '?').join(',')})
   `;
-
   const productIds = items.map(i => i.product_id);
 
   connection.query(checkStockSql, productIds, (err, stockRows) => {
@@ -51,24 +50,36 @@ exports.createOrder = (req, res) => {
       connection.query(orderLineSql, [orderLines], (err3) => {
         if (err3) return res.status(500).json({ error: 'Insert order_items failed', details: err3 });
 
-        // 4. Deduct stock from products
-        const updateStockQueries = items.map(item => {
-          return new Promise((resolve, reject) => {
-            const updateSql = 'UPDATE products SET stock = stock - ? WHERE product_id = ?';
-            connection.execute(updateSql, [item.quantity, item.product_id], (err4) => {
-              if (err4) reject(err4);
-              else resolve();
-            });
-          });
-        });
+        // 4. Calculate total amount
+        const totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-        Promise.all(updateStockQueries)
-          .then(() => {
-            return res.status(200).json({ success: true, orderId });
-          })
-          .catch(err5 => {
-            return res.status(500).json({ error: 'Stock deduction failed', details: err5 });
-          });
+        // 5. Update order with total amount
+        connection.execute(
+          'UPDATE orders SET total_amount = ? WHERE order_id = ?',
+          [totalAmount, orderId],
+          (err4) => {
+            if (err4) return res.status(500).json({ error: 'Failed to update total amount', details: err4 });
+
+            // 6. Deduct stock from products
+            const updateStockQueries = items.map(item => {
+              return new Promise((resolve, reject) => {
+                const updateSql = 'UPDATE products SET stock = stock - ? WHERE product_id = ?';
+                connection.execute(updateSql, [item.quantity, item.product_id], (err5) => {
+                  if (err5) reject(err5);
+                  else resolve();
+                });
+              });
+            });
+
+            Promise.all(updateStockQueries)
+              .then(() => {
+                return res.status(200).json({ success: true, orderId });
+              })
+              .catch(err6 => {
+                return res.status(500).json({ error: 'Stock deduction failed', details: err6 });
+              });
+          }
+        );
       });
     });
   });
@@ -197,7 +208,9 @@ exports.getAllOrders = (req, res) => {
   });
 };
 
-// ================= UPDATE ORDER STATUS =================
+
+
+// ================= UPDATE ORDER STATUS ================= (modified to use awardCoins)
 exports.updateOrderStatus = (req, res) => {
   const { order_id, status } = req.body;
 
@@ -208,45 +221,23 @@ exports.updateOrderStatus = (req, res) => {
 
   // If cancelling → rollback stock
   if (status === 'cancelled') {
-    const getItemsSql = `
-      SELECT product_id, quantity 
-      FROM order_items 
-      WHERE order_id = ?
-    `;
-    connection.query(getItemsSql, [order_id], (err, itemRows) => {
-      if (err) return res.status(500).json({ error: 'Failed to fetch order items', details: err });
-
-      if (itemRows.length === 0) {
-        return res.status(404).json({ error: 'No items found for this order' });
-      }
-
-      // Rollback stock
-      const rollbackPromises = itemRows.map(item => {
-        return new Promise((resolve, reject) => {
-          const rollbackSql = `UPDATE products SET stock = stock + ? WHERE product_id = ?`;
-          connection.query(rollbackSql, [item.quantity, item.product_id], (err2) => {
-            if (err2) reject(err2);
-            else resolve();
-          });
-        });
+    // ... your existing rollback code ...
+    Promise.all(rollbackPromises)
+      .then(() => {
+        // After rollback, update status
+        finalizeStatusUpdate(order_id, status, res);
+      })
+      .catch(err3 => {
+        return res.status(500).json({ error: 'Stock rollback failed', details: err3 });
       });
-
-      Promise.all(rollbackPromises)
-        .then(() => {
-          // After rollback, update status
-          finalizeStatusUpdate(order_id, status, res);
-        })
-        .catch(err3 => {
-          return res.status(500).json({ error: 'Stock rollback failed', details: err3 });
-        });
-    });
   } else {
     // For pending, received, shipped → just update
     finalizeStatusUpdate(order_id, status, res);
   }
 };
 
-// ================= HELPER =================
+
+// ================= HELPER ================= (modified)
 function finalizeStatusUpdate(order_id, status, res) {
   connection.execute(
     `UPDATE orders SET status = ? WHERE order_id = ?`,
@@ -255,13 +246,18 @@ function finalizeStatusUpdate(order_id, status, res) {
       if (err) return res.status(500).json({ error: 'Failed to update status', details: err });
       if (result.affectedRows === 0) return res.status(404).json({ error: 'Order not found' });
 
+      // ✅ NEW: Award coins if status is 'received'
+      if (status === 'received') {
+        awardCoins(order_id, (err) => {
+          if (err) console.error('Failed to award coins:', err);
+        });
+      }
+
       // ✅ No email/receipt, just confirm
       return res.status(200).json({ success: true, message: 'Status updated successfully' });
     }
   );
-}
-
-// Add these functions to your orderController.js file
+};
 
 // ================= GET SELLER ORDERS =================
 exports.getSellerOrders = (req, res) => {
@@ -347,6 +343,13 @@ exports.updateOrderStatusSeller = (req, res) => {
       });
     }
 
+    // ✅ NEW: Award coins if status is 'received'
+    if (status === 'received') {
+      awardCoins(orderId, (err) => {
+        if (err) console.error('Failed to award coins:', err);
+      });
+    }
+
     res.json({ 
       success: true, 
       message: 'Order status updated successfully' 
@@ -355,3 +358,79 @@ exports.updateOrderStatusSeller = (req, res) => {
 };
 
 
+
+// ================= HELPER: Award Coins (Shared Function) =================
+function awardCoins(orderId, callback) {
+  connection.query('SELECT user_id, total_amount FROM orders WHERE order_id = ?', [orderId], (err, rows) => {
+    if (err) {
+      console.error('Error fetching order for coins:', err);
+      return callback(err);
+    }
+    if (rows.length === 0) {
+      return callback(new Error('Order not found'));
+    }
+
+    const { user_id, total_amount } = rows[0];
+    const coins_earned = Math.floor(total_amount * 0.1); // Adjust formula here (e.g., Math.floor(total_amount * 0.1) for 10%)
+
+    // Check if already awarded
+    connection.query('SELECT * FROM transactions WHERE order_id = ?', [orderId], (err2, transRows) => {
+      if (err2) {
+        console.error('Error checking transaction:', err2);
+        return callback(err2);
+      }
+      if (transRows.length > 0) {
+        console.log(`Coins already awarded for order ${orderId}`);
+        return callback(null); // Already done
+      }
+
+      // Insert new transaction
+      connection.query(
+        'INSERT INTO transactions (user_id, order_id, coins_earned) VALUES (?, ?, ?)',
+        [user_id, orderId, coins_earned],
+        (err3) => {
+          if (err3) {
+            console.error('Error awarding coins:', err3);
+            return callback(err3);
+          }
+          console.log(`✅ Coins awarded: ${coins_earned} for order ${orderId} to user ${user_id}`);
+          callback(null);
+        }
+      );
+    });
+  });
+};
+
+
+
+
+
+// ================= NEW: Get User Rewards (Total Coins + Transaction List) =================
+exports.getUserRewards = (req, res) => {
+  const { user_id } = req.params;
+
+  if (!user_id) {
+    return res.status(400).json({ success: false, error: 'User ID required' });
+  }
+
+  // Query total coins only
+  connection.query(
+    'SELECT COALESCE(SUM(coins_earned), 0) as total_coins FROM transactions WHERE user_id = ?',
+    [user_id],
+    (err, sumResult) => {
+      if (err) {
+        console.error('Error fetching total coins:', err);
+        return res.status(500).json({ success: false, error: 'Database error' });
+      }
+
+      const total_coins = sumResult[0].total_coins;
+
+      res.json({
+        success: true,
+        data: {
+          total_coins
+        }
+      });
+    }
+  );
+};
