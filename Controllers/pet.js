@@ -138,3 +138,35 @@ exports.createPetForUser = (req, res) => {
     });
   });
 };
+
+// ================= NEW: Get User's Pet =================
+exports.getUserPet = (req, res) => {
+  const { user_id } = req.params;
+
+  if (!user_id) {
+    return res.status(400).json({ error: 'User  ID required' });
+  }
+
+  const sql = `
+    SELECT p.*, u.username 
+    FROM pets p 
+    JOIN users u ON p.user_id = u.user_id
+    WHERE p.user_id = ?
+  `;
+
+  db.query(sql, [user_id], (err, results) => {
+    if (err) {
+      console.error('Error fetching user pet:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (results.length === 0) {
+      return res.json({ success: true, pet: null }); // No pet created yet
+    }
+
+    res.json({ 
+      success: true, 
+      pet: results[0] 
+    });
+  });
+};

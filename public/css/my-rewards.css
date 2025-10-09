@@ -59,3 +59,111 @@
       margin-top: 10px;
     }
   
+    
+
+
+
+
+
+    /* 🎮 PET SECTION — Smaller, left-aligned layout */
+#petSection {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.pet-card {
+  background: radial-gradient(circle at center, #2b2b4a, #1b1b2f);
+  border: 2px solid #ffb400;
+  border-radius: 15px;
+  box-shadow: 0 0 15px #ffb40060, inset 0 0 10px #ffb40030;
+  width: 280px;              /* ✅ Smaller width */
+  padding: 15px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-left: 20px;
+}
+
+.pet-card:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 0 25px #ffd90090, inset 0 0 10px #ffb40050;
+}
+
+/* Pet image smaller + glowing */
+.pet-image {
+  width: 100px !important;
+  height: 100px !important;
+  border: 3px solid #ffd700;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 15px #ffd70070;
+  animation: floatPet 3s ease-in-out infinite, petGlow 3s ease-in-out infinite;
+}
+
+@keyframes floatPet {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes petGlow {
+  0%, 100% { box-shadow: 0 0 15px #ffd70090, 0 0 25px #ffd70060; }
+  50% { box-shadow: 0 0 25px #fff000c0, 0 0 40px #ffd70090; }
+}
+
+/* Pet name + details smaller */
+.pet-card h3 {
+  font-size: 1.2rem;
+  color: #ffe066;
+  margin-top: 10px;
+  text-shadow: 0 0 6px #ffcc00, 0 0 10px #ffb400;
+}
+
+.pet-card p {
+  color: #ccc;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.pet-card i.fa-paw {
+  color: #ffb400;
+}
+
+/* XP / progress bar — smaller version */
+.pet-progress {
+  height: 10px;
+  width: 90%;
+  margin: 10px auto;
+  border-radius: 8px;
+  background: #333;
+  border: 1px solid #ffb400;
+  overflow: hidden;
+  box-shadow: 0 0 5px #ffb40040;
+}
+
+.pet-progress-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #ffd700, #ffb400);
+  box-shadow: 0 0 8px #ffb400a0;
+  border-radius: 8px;
+  transition: width 1.2s ease-in-out;
+}
+
+/* Feed button smaller */
+.pet-action-btn {
+  background: linear-gradient(135deg, #ffb400, #ffea00);
+  border: none;
+  color: #1b1b2f;
+  font-weight: bold;
+  padding: 6px 15px;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ffb40060;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.pet-action-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #ffea00a0;
+}
