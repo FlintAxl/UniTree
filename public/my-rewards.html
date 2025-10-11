@@ -34,23 +34,36 @@
       </div>
     </div>
 
-    <!-- ✅ NEW: Pet Display Section -->
-    <div id="petSection" class="row mt-4">
-      <!-- Dynamically populated by JS -->
-    </div>
+ <!-- 🎮 GAME INTERFACE ROW -->
+<div id="gameRow" class="d-flex justify-content-center align-items-start flex-wrap gap-4 mt-4">
 
-    <!-- 🌾 Pet Care Shop Section -->
-<div class="text-center mt-3">
-  <button id="buyWaterBtn" class="btn btn-primary me-2">
-    <i class="fa-solid fa-bucket"></i> Buy Water (2 coins)
-  </button>
-  <button id="buyFertilizerBtn" class="btn btn-success">
-    <i class="fa-solid fa-seedling"></i> Buy Fertilizer (5 coins)
-  </button>
-  <button id="inventoryBtn" class="btn btn-secondary ms-2">
-    <i class="fa-solid fa-box"></i> View Inventory
-  </button>
+  <!-- 🐾 PET SECTION -->
+  <div class="game-card text-center" id="petSection">
+    <!-- Dynamically populated by JS -->
+  </div>
+
+  <!-- 💧 SHOP SECTION -->
+  <div class="game-card text-center">
+    <h4 class="section-title"><i class="fa-solid fa-store"></i> Pet Care Shop</h4>
+    <button id="buyWaterBtn" class="btn btn-primary me-2 mb-2">
+      <i class="fa-solid fa-bucket"></i> Buy Water (2 coins)
+    </button>
+    <button id="buyFertilizerBtn" class="btn btn-success mb-2">
+      <i class="fa-solid fa-seedling"></i> Buy Fertilizer (5 coins)
+    </button>
+  </div>
+
+  <!-- 📦 INVENTORY SECTION -->
+  <div class="game-card text-center">
+    <h4 class="section-title"><i class="fa-solid fa-box"></i> Inventory</h4>
+    <p><i class="fa-solid fa-bucket text-primary"></i> Water Buckets: <span id="waterCount">0</span></p>
+    <p><i class="fa-solid fa-seedling text-success"></i> Fertilizer: <span id="fertilizerCount">0</span></p>
+
+  </div>
+
 </div>
+
+
 
 
 

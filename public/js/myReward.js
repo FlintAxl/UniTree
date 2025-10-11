@@ -48,26 +48,24 @@ $(document).ready(function () {
         
         const currentImage = levelImages[pet.level] || pet.level1_image || 'default-pet.png'; // Fallback image if needed
         const petHtml = `
-  <div class="col-md-12">
-    <div class="card pet-card text-center">
-      <div class="card-body">
-        <img src="/images/${currentImage}" alt="${pet.pet_name}" 
-             class="pet-image img-fluid rounded-circle" 
-             style="width: 150px; height: 150px; object-fit: cover;">
-        <h3>${pet.pet_name}</h3>
-        <p><i class="fa-solid fa-paw"></i> Level: ${pet.level}</p>
+  <div class="card pet-card text-center">
+    <div class="card-body">
+      <img src="/images/${currentImage}" alt="${pet.pet_name}" 
+           class="pet-image img-fluid rounded-circle" 
+           style="width: 150px; height: 150px; object-fit: cover;">
+      <h3>${pet.pet_name}</h3>
+      <p><i class="fa-solid fa-paw"></i> Level: ${pet.level}</p>
 
-        <!-- XP progress bar -->
-        <div class="pet-progress mb-2">
-          <div class="pet-progress-bar" id="xpBar" style="width: ${Math.min(100, pet.xp || 0)}%;"></div>
-        </div>
-        <p class="mb-0">XP: ${pet.xp || 0} / 100</p>
-
-        <p class="text-muted">Last Fed: ${pet.last_fed ? new Date(pet.last_fed).toLocaleString() : 'Never'}</p>
-        <p>Use your earned coins to level up and care for ${pet.pet_name}!</p>
-
-        <button class="pet-action-btn mt-2"><i class="fa-solid fa-bone"></i> Feed ${pet.pet_name}</button>
+      <!-- XP progress bar -->
+      <div class="pet-progress mb-2">
+        <div class="pet-progress-bar" id="xpBar" style="width: ${Math.min(100, pet.xp || 0)}%;"></div>
       </div>
+      <p class="mb-0">XP: ${pet.xp || 0} / 100</p>
+
+      <p class="text-muted">Last Fed: ${pet.last_fed ? new Date(pet.last_fed).toLocaleString() : 'Never'}</p>
+      <p>Use your earned coins to level up and care for ${pet.pet_name}!</p>
+
+      <button class="pet-action-btn mt-2"><i class="fa-solid fa-bone"></i> Feed ${pet.pet_name}</button>
     </div>
   </div>
 `;
@@ -180,14 +178,7 @@ $('#buyFertilizerBtn').click(() => {
   });
 });
 
-// ...existing code...
 
-
-// ✅ VIEW INVENTORY
-$('#inventoryBtn').click(() => {
-  loadInventory();
-  $('#inventoryModal').modal('show');
-});
 
 // ✅ FEED PET
 $(document).on('click', '.pet-action-btn', () => {
