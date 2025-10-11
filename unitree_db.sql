@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 11, 2025 at 12:39 PM
+-- Generation Time: Oct 11, 2025 at 03:08 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -97,7 +97,9 @@ INSERT INTO `orders` (`order_id`, `user_id`, `total_amount`, `date_placed`, `dat
 (29, 7, 0.00, '2025-10-08 21:03:23', '2025-10-08 21:03:37', 'received', '2025-10-08 13:03:23'),
 (30, 7, 0.00, '2025-10-08 21:07:26', '2025-10-08 21:07:37', 'received', '2025-10-08 13:07:26'),
 (31, 7, 24.00, '2025-10-08 21:11:09', '2025-10-08 21:11:22', 'received', '2025-10-08 13:11:09'),
-(32, 7, 12.00, '2025-10-11 17:59:05', '2025-10-11 17:59:20', 'received', '2025-10-11 09:59:05');
+(32, 7, 12.00, '2025-10-11 17:59:05', '2025-10-11 17:59:20', 'received', '2025-10-11 09:59:05'),
+(33, 7, 12.00, '2025-10-11 19:29:03', '2025-10-11 19:29:41', 'received', '2025-10-11 11:29:03'),
+(34, 7, 36.00, '2025-10-11 19:30:22', '2025-10-11 19:30:38', 'received', '2025-10-11 11:30:22');
 
 -- --------------------------------------------------------
 
@@ -132,7 +134,9 @@ INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`
 (36, 29, 44, 3, 12.00),
 (37, 30, 44, 2, 12.00),
 (38, 31, 44, 2, 12.00),
-(39, 32, 44, 1, 12.00);
+(39, 32, 44, 1, 12.00),
+(40, 33, 44, 1, 12.00),
+(41, 34, 44, 3, 12.00);
 
 -- --------------------------------------------------------
 
@@ -189,7 +193,7 @@ INSERT INTO `pets` (`pet_id`, `user_id`, `pet_name`, `level`, `xp`, `coins`, `le
 (85, 69, 'ki', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
 (86, 70, 'kilo', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
 (87, 71, 'ha', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(88, 7, 'freeza', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0);
+(88, 7, 'freeza', 1, 30, 0, 't1.jpg', 't2.png', 't3.jpg', '2025-10-11 13:05:07', 0);
 
 -- --------------------------------------------------------
 
@@ -228,7 +232,7 @@ INSERT INTO `products` (`product_id`, `name`, `description`, `price`, `stock`, `
 (20, 'ballpen', 'basta ballpen', 20.00, 50, 3, '2025-09-29 01:36:42', 58),
 (21, 'saas', 'saas', 250.00, 122, NULL, '2025-10-02 05:32:04', 60),
 (43, 'aircon', 'air', 1.00, 7, 2, '2025-10-04 11:48:41', 5),
-(44, 'jajasj', 'jasjan', 12.00, 99, NULL, '2025-10-07 01:10:14', 6);
+(44, 'jajasj', 'jasjan', 12.00, 95, NULL, '2025-10-07 01:10:14', 6);
 
 -- --------------------------------------------------------
 
@@ -308,7 +312,7 @@ CREATE TABLE `rewards` (
 CREATE TABLE `transactions` (
   `transaction_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `order_id` int(11) NOT NULL,
+  `order_id` int(11) DEFAULT NULL,
   `coins_earned` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -322,7 +326,11 @@ INSERT INTO `transactions` (`transaction_id`, `user_id`, `order_id`, `coins_earn
 (2, 7, 29, 0, '2025-10-08 13:03:56'),
 (3, 7, 30, 0, '2025-10-08 13:07:49'),
 (4, 7, 31, 2, '2025-10-08 13:11:43'),
-(5, 7, 32, 1, '2025-10-11 09:59:32');
+(5, 7, 32, 20, '2025-10-11 09:59:32'),
+(6, 7, NULL, -5, '2025-10-11 11:27:24'),
+(7, 7, NULL, -2, '2025-10-11 11:27:31'),
+(8, 7, 33, 1, '2025-10-11 11:30:03'),
+(9, 7, 34, 3, '2025-10-11 11:30:51');
 
 -- --------------------------------------------------------
 
@@ -354,8 +362,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `role`, `created_at`, `token`, `first_name`, `last_name`, `age`, `birthday`, `address`, `gender`, `profile_picture`, `status`) VALUES
 (5, 'flint', 'flintaxl.celetaria@gmail.com', '$2b$10$nNlIhzJA9ja1ektzbApOee2U2zdk7tA7s.vZyZ3RKvtitq6NKUzuG', 'admin', '2025-09-23 02:12:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
-(6, 'bea', 'bea@gmail.com', '$2b$10$VvcXKPSLhVkcrT/Nb5a36eRquGTfFRO0sfv3oJkkMHwVaFpqBS0qG', 'seller', '2025-09-23 02:28:37', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJyb2xlIjoic2VsbGVyIiwiaWF0IjoxNzYwMTc2NzI0fQ.1wxNlWKdcRibEGvVBXfBKlJLsp1j79SPsiDR5_4Pxjg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
-(7, 'ash', 'ash@gmail.com', '$2b$10$Th0GH9.IPiSb5J.uWIJmaeSR.zSHRFPdsvJo6Lq3Rsr4lWrt2kURm', 'customer', '2025-09-23 02:33:36', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo3LCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NjAxNzUyMDZ9.zlaM_aI-W5VU3pHIbaQRB79eSmnQ_VAoNEomVnzGlvU', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
+(6, 'bea', 'bea@gmail.com', '$2b$10$VvcXKPSLhVkcrT/Nb5a36eRquGTfFRO0sfv3oJkkMHwVaFpqBS0qG', 'seller', '2025-09-23 02:28:37', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
+(7, 'ash', 'ash@gmail.com', '$2b$10$Th0GH9.IPiSb5J.uWIJmaeSR.zSHRFPdsvJo6Lq3Rsr4lWrt2kURm', 'customer', '2025-09-23 02:33:36', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo3LCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NjAxODc3Nzh9.-Z-ckmWUapcUQNoVmWd5bb7o3MUNOymbkwkUADChJpI', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
 (12, 'a', 'a@gmail.com', '$2b$10$R5Rphq8YYSQMeWhsnbb/TeS1ISchse29gKt4aJCbO/LYs23YnQZZm', 'customer', '2025-09-23 04:35:50', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
 (15, 'kim', 'kim@gmail.com', '$2b$10$VU45G1S23LalvwTpnmLRAOGeVzyHWRPEvKaLUrIL/dGc4rmcRGsDO', 'seller', '2025-09-23 14:09:37', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
 (16, 'bab1', 'bab@gmail.com', '$2b$10$JR7USHa4BnULcRibeDGxzebMHmG8WgD6aW0EVpIXwFFMfSePV48tO', 'seller', '2025-09-23 14:21:25', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
@@ -417,6 +425,14 @@ CREATE TABLE `user_inventory` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_inventory`
+--
+
+INSERT INTO `user_inventory` (`inventory_id`, `user_id`, `item_type`, `quantity`, `created_at`, `updated_at`) VALUES
+(1, 7, 'fertilizer', 0, '2025-10-11 11:27:24', '2025-10-11 13:05:07'),
+(2, 7, 'water', 0, '2025-10-11 11:27:31', '2025-10-11 11:27:39');
 
 --
 -- Indexes for dumped tables
@@ -535,13 +551,13 @@ ALTER TABLE `listings`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `pets`
@@ -577,7 +593,7 @@ ALTER TABLE `rewards`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -589,7 +605,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `user_inventory`
 --
 ALTER TABLE `user_inventory`
-  MODIFY `inventory_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `inventory_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables

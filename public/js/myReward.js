@@ -58,9 +58,10 @@ $(document).ready(function () {
         <p><i class="fa-solid fa-paw"></i> Level: ${pet.level}</p>
 
         <!-- XP progress bar -->
-        <div class="pet-progress">
-          <div class="pet-progress-bar" id="xpBar" style="width: ${pet.xp_progress || 0}%;"></div>
+        <div class="pet-progress mb-2">
+          <div class="pet-progress-bar" id="xpBar" style="width: ${Math.min(100, pet.xp || 0)}%;"></div>
         </div>
+        <p class="mb-0">XP: ${pet.xp || 0} / 100</p>
 
         <p class="text-muted">Last Fed: ${pet.last_fed ? new Date(pet.last_fed).toLocaleString() : 'Never'}</p>
         <p>Use your earned coins to level up and care for ${pet.pet_name}!</p>
