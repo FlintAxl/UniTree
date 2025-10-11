@@ -1,7 +1,7 @@
 $(document).ready(function () {
     const token = sessionStorage.getItem('access_token');
     const userId = sessionStorage.getItem('userId');
-
+    
     if (!token || !userId) {
         Swal.fire({
             icon: 'warning',
@@ -45,6 +45,7 @@ $(document).ready(function () {
           2: pet.level2_image,
           3: pet.level3_image
         };
+        
         const currentImage = levelImages[pet.level] || pet.level1_image || 'default-pet.png'; // Fallback image if needed
         const petHtml = `
   <div class="col-md-12">
@@ -97,6 +98,120 @@ $(document).ready(function () {
       Swal.fire('Error', 'Failed to load pet details.', 'error');
     }
   });
+
+
+  // Handle pet action button (e.g., feeding)
+
+  // ================= INVENTORY AND FEED SYSTEM =================
+let totalCoins = 0;
+let petId = null;
+let inventory = { water: 0, fertilizer: 0 };
+
+function loadCoins() {
+  $.ajax({
+    url: `${url}api/v1/my-rewards/${userId}`,
+    headers: { Authorization: `Bearer ${token}` },
+    success: (res) => {
+      totalCoins = res.data.total_coins || 0;
+      $('#totalCoins').text(totalCoins);
+    }
+  });
+}
+
+function loadInventory() {
+  $.ajax({
+    url: `${url}api/v1/inventory/${userId}`,
+    headers: { Authorization: `Bearer ${token}` },
+    success: (res) => {
+      inventory = res.inventory || { water: 0, fertilizer: 0 };
+      $('#waterCount').text(inventory.water);
+      $('#fertilizerCount').text(inventory.fertilizer);
+    }
+  });
+}
+
+// Load coins + inventory initially
+loadCoins();
+loadInventory();
+
+// ✅ BUY WATER
+// ...existing code...
+
+$('#buyWaterBtn').click(() => {
+  if (totalCoins < 2) return Swal.fire('Oops', 'Insufficient coins!', 'warning');
+  $.ajax({
+    url: `${url}api/v1/inventory/buy`,
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({
+      user_id: userId,
+      item_type: 'water'
+    }),
+    success: function(res) {
+      Swal.fire('Purchased!', 'You bought 1 Water Bucket!', 'success');
+      loadCoins();
+      loadInventory();
+    },
+    error: function(xhr) {
+      Swal.fire('Error', xhr.responseJSON?.message || 'Purchase failed', 'error');
+    }
+  });
+});
+
+$('#buyFertilizerBtn').click(() => {
+  if (totalCoins < 5) return Swal.fire('Oops', 'Insufficient coins!', 'warning');
+  $.ajax({
+    url: `${url}api/v1/inventory/buy`,
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({
+      user_id: userId,
+      item_type: 'fertilizer'
+    }),
+    success: function(res) {
+      Swal.fire('Purchased!', 'You bought 1 Fertilizer!', 'success');
+      loadCoins();
+      loadInventory();
+    },
+    error: function(xhr) {
+      Swal.fire('Error', xhr.responseJSON?.message || 'Purchase failed', 'error');
+    }
+  });
+});
+
+// ...existing code...
+
+
+// ✅ VIEW INVENTORY
+$('#inventoryBtn').click(() => {
+  loadInventory();
+  $('#inventoryModal').modal('show');
+});
+
+// ✅ FEED PET
+$(document).on('click', '.pet-action-btn', () => {
+  Swal.fire({
+    title: 'Choose what to feed',
+    showDenyButton: true,
+    confirmButtonText: 'Water',
+    denyButtonText: 'Fertilizer',
+  }).then((result) => {
+    if (result.isConfirmed) feedPet('water');
+    else if (result.isDenied) feedPet('fertilizer');
+  });
+});
+
+function feedPet(type) {
+  $.post(`${url}api/v1/pets/feed`, { user_id: userId, item_type: type }, (res) => {
+    Swal.fire('Yum!', `Your pet gained XP!`, 'success');
+    loadInventory();
+    // Reload pet to show updated XP
+    setTimeout(() => location.reload(), 800);
+  }).fail((xhr) => {
+    const msg = xhr.responseJSON?.message || 'Feeding failed.';
+    Swal.fire('Error', msg, 'error');
+  });
+}
 
 
     

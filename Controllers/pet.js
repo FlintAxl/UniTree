@@ -170,3 +170,49 @@ exports.getUserPet = (req, res) => {
     });
   });
 };
+
+exports.feedPet = (req, res) => {
+  const { user_id, item_type } = req.body;
+  if (!user_id || !item_type) return res.status(400).json({ message: 'Missing data' });
+
+  const xpGain = item_type === 'water' ? 10 : 20;
+
+  db.query(
+    'SELECT * FROM user_inventory WHERE user_id = ? AND item_type = ?',
+    [user_id, item_type],
+    (err, rows) => {
+      if (err) return res.status(500).json({ message: 'DB error' });
+      if (rows.length === 0 || rows[0].quantity <= 0)
+        return res.status(400).json({ message: `You don't have any ${item_type}` });
+
+      // Consume item
+      db.query(
+        'UPDATE user_inventory SET quantity = quantity - 1 WHERE user_id = ? AND item_type = ?',
+        [user_id, item_type]
+      );
+
+      // Increase XP and possibly level up
+      db.query('SELECT * FROM pets WHERE user_id = ?', [user_id], (err2, pets) => {
+        if (err2) return res.status(500).json({ message: 'DB error' });
+        if (pets.length === 0) return res.status(400).json({ message: 'No pet found' });
+
+        const pet = pets[0];
+        let newXp = pet.xp + xpGain;
+        let newLevel = pet.level;
+        if (newXp >= 100 && newLevel < 3) {
+          newLevel += 1;
+          newXp = 0; // reset XP after level up
+        }
+
+        db.query(
+          'UPDATE pets SET xp = ?, level = ?, last_fed = NOW() WHERE user_id = ?',
+          [newXp, newLevel, user_id],
+          (err3) => {
+            if (err3) return res.status(500).json({ message: 'DB error' });
+            res.json({ success: true, message: 'Pet fed successfully!' });
+          }
+        );
+      });
+    }
+  );
+};

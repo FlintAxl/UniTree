@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2025 at 01:41 PM
+-- Generation Time: Oct 11, 2025 at 12:39 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -87,12 +87,17 @@ INSERT INTO `orders` (`order_id`, `user_id`, `total_amount`, `date_placed`, `dat
 (19, 7, 0.00, '2025-10-04 16:44:57', NULL, 'received', '2025-10-04 08:44:57'),
 (20, 7, 0.00, '2025-10-04 16:45:54', NULL, 'cancelled', '2025-10-04 08:45:54'),
 (21, 7, 0.00, '2025-10-04 19:27:10', NULL, 'cancelled', '2025-10-04 11:27:10'),
-(22, 7, 0.00, '2025-10-04 19:29:58', NULL, 'pending', '2025-10-04 11:29:58'),
+(22, 7, 0.00, '2025-10-04 19:29:58', NULL, 'cancelled', '2025-10-04 11:29:58'),
 (23, 7, 0.00, '2025-10-04 19:32:00', NULL, 'pending', '2025-10-04 11:32:00'),
 (24, 5, 0.00, '2025-10-04 19:38:34', NULL, 'pending', '2025-10-04 11:38:34'),
 (25, 7, 0.00, '2025-10-04 19:49:42', NULL, 'pending', '2025-10-04 11:49:42'),
 (26, 7, 0.00, '2025-10-04 20:53:48', NULL, 'pending', '2025-10-04 12:53:48'),
-(27, 39, 0.00, '2025-10-07 09:12:00', '2025-10-07 09:15:31', 'received', '2025-10-07 01:12:00');
+(27, 39, 0.00, '2025-10-07 09:12:00', '2025-10-07 09:15:31', 'received', '2025-10-07 01:12:00'),
+(28, 7, 0.00, '2025-10-08 20:55:35', '2025-10-08 20:56:33', 'received', '2025-10-08 12:55:35'),
+(29, 7, 0.00, '2025-10-08 21:03:23', '2025-10-08 21:03:37', 'received', '2025-10-08 13:03:23'),
+(30, 7, 0.00, '2025-10-08 21:07:26', '2025-10-08 21:07:37', 'received', '2025-10-08 13:07:26'),
+(31, 7, 24.00, '2025-10-08 21:11:09', '2025-10-08 21:11:22', 'received', '2025-10-08 13:11:09'),
+(32, 7, 12.00, '2025-10-11 17:59:05', '2025-10-11 17:59:20', 'received', '2025-10-11 09:59:05');
 
 -- --------------------------------------------------------
 
@@ -122,7 +127,12 @@ INSERT INTO `order_items` (`order_item_id`, `order_id`, `product_id`, `quantity`
 (31, 24, 11, 1, 1.00),
 (32, 25, 43, 3, 1.00),
 (33, 26, 43, 2, 1.00),
-(34, 27, 44, 2, 12.00);
+(34, 27, 44, 2, 12.00),
+(35, 28, 44, 2, 12.00),
+(36, 29, 44, 3, 12.00),
+(37, 30, 44, 2, 12.00),
+(38, 31, 44, 2, 12.00),
+(39, 32, 44, 1, 12.00);
 
 -- --------------------------------------------------------
 
@@ -135,6 +145,7 @@ CREATE TABLE `pets` (
   `user_id` int(11) NOT NULL,
   `pet_name` varchar(100) NOT NULL,
   `level` int(11) DEFAULT 1,
+  `xp` int(11) DEFAULT 0,
   `coins` int(11) DEFAULT 0,
   `level1_image` varchar(255) DEFAULT NULL,
   `level2_image` varchar(255) DEFAULT NULL,
@@ -147,57 +158,38 @@ CREATE TABLE `pets` (
 -- Dumping data for table `pets`
 --
 
-INSERT INTO `pets` (`pet_id`, `user_id`, `pet_name`, `level`, `coins`, `level1_image`, `level2_image`, `level3_image`, `last_fed`, `has_fruit`) VALUES
-(28, 15, 'a', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(29, 15, 'a', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(30, 16, 'kulet1', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(32, 17, 'man', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(33, 20, 'mans', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(34, 21, 'man', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(35, 21, 'man', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(36, 22, 'asasas', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(37, 22, 'asasas', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(39, 23, 'tite', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(40, 24, 'lala', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(41, 24, 'lala', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(42, 24, 'lala', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(43, 24, 'lala', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(44, 24, 'lala', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(45, 24, 'lala', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(46, 35, 'butchi', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(47, 35, 'butchi', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(48, 36, 'eli', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(49, 36, 'eli', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(52, 38, 'minggay', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(53, 38, 'minggay', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(54, 39, 'lili', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(55, 39, 'lili', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(56, 40, 'mimi', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(57, 40, 'mimi', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(58, 41, 'mimiyuh', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(59, 41, 'mimiyuh', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(60, 42, 'taytay', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(61, 42, 'taytay', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(62, 43, 'blue', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(64, 44, 'koko', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(65, 44, 'koko', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(66, 45, 'koi', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(67, 45, 'koi', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(68, 46, 'jaja', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(69, 46, 'jaja', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(70, 47, 'abc', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(71, 47, 'abc', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(72, 48, 'sample', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(73, 48, 'sample', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(74, 49, 'lara', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(75, 49, 'lara', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(76, 57, 'higad', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(77, 57, 'higad', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(78, 61, 'van', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(79, 61, 'van', 1, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
-(80, 5, 'groot', 1, 0, '1759390285681.jpg', NULL, NULL, NULL, 0),
-(81, 62, 'man', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(82, 62, 'man', 1, 0, '1as.png', '2as.png', '3as.png', NULL, 0);
+INSERT INTO `pets` (`pet_id`, `user_id`, `pet_name`, `level`, `xp`, `coins`, `level1_image`, `level2_image`, `level3_image`, `last_fed`, `has_fruit`) VALUES
+(28, 15, 'a', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(30, 16, 'kulet1', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(32, 17, 'man', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(33, 20, 'mans', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(35, 21, 'man', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(37, 22, 'asasas', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(39, 23, 'tite', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(41, 24, 'lala', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(47, 35, 'butchi', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(49, 36, 'eli', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(53, 38, 'minggay', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(55, 39, 'lili', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(57, 40, 'mimi', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(58, 41, 'mimiyuh', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(60, 42, 'taytay', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(62, 43, 'blue', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(64, 44, 'koko', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(66, 45, 'koi', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(68, 46, 'jaja', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(70, 47, 'abc', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(72, 48, 'sample', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(74, 49, 'lara', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(76, 57, 'higad', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(78, 61, 'van', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(80, 5, 'groot', 1, 0, 0, '1759390285681.jpg', NULL, NULL, NULL, 0),
+(82, 62, 'man', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(83, 68, 'wawa', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(85, 69, 'ki', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(86, 70, 'kilo', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
+(87, 71, 'ha', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
+(88, 7, 'freeza', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -233,10 +225,10 @@ INSERT INTO `products` (`product_id`, `name`, `description`, `price`, `stock`, `
 (17, 'earphones', 'quality earphones', 180.00, 18, 1, '2025-09-27 13:40:03', 54),
 (18, 'charger', 'charger', 100.00, 5, 1, '2025-09-27 13:41:17', 54),
 (19, 'bracelet', 'bracelet design for besties', 100.00, 30, 2, '2025-09-28 13:48:53', 56),
-(20, 'ballpen', 'basta ballpen', 20.00, 49, 3, '2025-09-29 01:36:42', 58),
+(20, 'ballpen', 'basta ballpen', 20.00, 50, 3, '2025-09-29 01:36:42', 58),
 (21, 'saas', 'saas', 250.00, 122, NULL, '2025-10-02 05:32:04', 60),
 (43, 'aircon', 'air', 1.00, 7, 2, '2025-10-04 11:48:41', 5),
-(44, 'jajasj', 'jasjan', 12.00, 109, NULL, '2025-10-07 01:10:14', 6);
+(44, 'jajasj', 'jasjan', 12.00, 99, NULL, '2025-10-07 01:10:14', 6);
 
 -- --------------------------------------------------------
 
@@ -321,6 +313,17 @@ CREATE TABLE `transactions` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `transactions`
+--
+
+INSERT INTO `transactions` (`transaction_id`, `user_id`, `order_id`, `coins_earned`, `created_at`) VALUES
+(1, 7, 28, 0, '2025-10-08 12:56:46'),
+(2, 7, 29, 0, '2025-10-08 13:03:56'),
+(3, 7, 30, 0, '2025-10-08 13:07:49'),
+(4, 7, 31, 2, '2025-10-08 13:11:43'),
+(5, 7, 32, 1, '2025-10-11 09:59:32');
+
 -- --------------------------------------------------------
 
 --
@@ -351,8 +354,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `role`, `created_at`, `token`, `first_name`, `last_name`, `age`, `birthday`, `address`, `gender`, `profile_picture`, `status`) VALUES
 (5, 'flint', 'flintaxl.celetaria@gmail.com', '$2b$10$nNlIhzJA9ja1ektzbApOee2U2zdk7tA7s.vZyZ3RKvtitq6NKUzuG', 'admin', '2025-09-23 02:12:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
-(6, 'bea', 'bea@gmail.com', '$2b$10$VvcXKPSLhVkcrT/Nb5a36eRquGTfFRO0sfv3oJkkMHwVaFpqBS0qG', 'seller', '2025-09-23 02:28:37', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
-(7, 'ash', 'ash@gmail.com', '$2b$10$Th0GH9.IPiSb5J.uWIJmaeSR.zSHRFPdsvJo6Lq3Rsr4lWrt2kURm', 'customer', '2025-09-23 02:33:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
+(6, 'bea', 'bea@gmail.com', '$2b$10$VvcXKPSLhVkcrT/Nb5a36eRquGTfFRO0sfv3oJkkMHwVaFpqBS0qG', 'seller', '2025-09-23 02:28:37', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJyb2xlIjoic2VsbGVyIiwiaWF0IjoxNzYwMTc2NzI0fQ.1wxNlWKdcRibEGvVBXfBKlJLsp1j79SPsiDR5_4Pxjg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
+(7, 'ash', 'ash@gmail.com', '$2b$10$Th0GH9.IPiSb5J.uWIJmaeSR.zSHRFPdsvJo6Lq3Rsr4lWrt2kURm', 'customer', '2025-09-23 02:33:36', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo3LCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NjAxNzUyMDZ9.zlaM_aI-W5VU3pHIbaQRB79eSmnQ_VAoNEomVnzGlvU', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
 (12, 'a', 'a@gmail.com', '$2b$10$R5Rphq8YYSQMeWhsnbb/TeS1ISchse29gKt4aJCbO/LYs23YnQZZm', 'customer', '2025-09-23 04:35:50', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
 (15, 'kim', 'kim@gmail.com', '$2b$10$VU45G1S23LalvwTpnmLRAOGeVzyHWRPEvKaLUrIL/dGc4rmcRGsDO', 'seller', '2025-09-23 14:09:37', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
 (16, 'bab1', 'bab@gmail.com', '$2b$10$JR7USHa4BnULcRibeDGxzebMHmG8WgD6aW0EVpIXwFFMfSePV48tO', 'seller', '2025-09-23 14:21:25', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
@@ -394,7 +397,26 @@ INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `role`, `create
 (63, 'ka', 'ka@gmail.com', '$2b$10$Bg4n8a1vRT2GJJQf.kFgfuUxwOfAs/.IZoLlJaKAS6m1JLLQbU7mS', 'seller', '2025-10-07 01:51:12', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
 (65, 'ss', 'ss@gmail.com', '$2b$10$/F1UPkAealMfmRxju66PXOEhAtatsOXlI4Q/BSzu/tdr8v.LpLND2', 'seller', '2025-10-07 02:11:23', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'rejected'),
 (66, 'kiki', 'kiki@gmail.com', '$2b$10$PJ7shLQHSDh6bflaSM7DKe3x9ieYOUAfjBx5g8ScIUH8hLpFM32AW', 'seller', '2025-10-07 02:33:04', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'rejected'),
-(67, 'kuku', 'kuku@gmail.com', '$2b$10$70VbZYyu4EpfPBORDMqZ/.wAuqqCbnDMvYrTA8ztJ9oq5oJUmO36i', 'seller', '2025-10-07 02:33:48', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved');
+(67, 'kuku', 'kuku@gmail.com', '$2b$10$70VbZYyu4EpfPBORDMqZ/.wAuqqCbnDMvYrTA8ztJ9oq5oJUmO36i', 'seller', '2025-10-07 02:33:48', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
+(68, 'ku', 'ku@gmail.com', '$2b$10$Qcq.qApbcwOQK4NoR/e0Ue7MaLUXqi1XXrNuBaf.CGIvl2sF1onTy', 'customer', '2025-10-09 05:34:48', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
+(69, 'paul', 'paul@gmail.com', '$2b$10$jQCbXE6I4g2Q2h5ZpxX2ruCGMi3nOOvZozO..jHJn9Nb.L.KvZ4pu', 'customer', '2025-10-09 05:39:27', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
+(70, 'si', 'si@gmail.com', '$2b$10$4brG4kdq/qAjD8nKuEHcw.UxQH.r6.Xokh2wftawBGg6kdnwa4HPy', 'customer', '2025-10-09 06:06:59', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
+(71, 'bo', 'bo@gmail.com', '$2b$10$QrLgaPKzLlSw.wKBRZ5PxerTprJjzJNWKaZ3gTGjMMlhIp.HA6Awq', 'customer', '2025-10-09 06:17:29', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_inventory`
+--
+
+CREATE TABLE `user_inventory` (
+  `inventory_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `item_type` enum('water','fertilizer') NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
@@ -486,6 +508,14 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `user_inventory`
+--
+ALTER TABLE `user_inventory`
+  ADD PRIMARY KEY (`inventory_id`),
+  ADD UNIQUE KEY `unique_user_item` (`user_id`,`item_type`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -505,19 +535,19 @@ ALTER TABLE `listings`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `pets`
 --
 ALTER TABLE `pets`
-  MODIFY `pet_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+  MODIFY `pet_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -547,13 +577,19 @@ ALTER TABLE `rewards`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+
+--
+-- AUTO_INCREMENT for table `user_inventory`
+--
+ALTER TABLE `user_inventory`
+  MODIFY `inventory_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables

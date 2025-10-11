@@ -39,6 +39,40 @@
       <!-- Dynamically populated by JS -->
     </div>
 
+    <!-- 🌾 Pet Care Shop Section -->
+<div class="text-center mt-3">
+  <button id="buyWaterBtn" class="btn btn-primary me-2">
+    <i class="fa-solid fa-bucket"></i> Buy Water (2 coins)
+  </button>
+  <button id="buyFertilizerBtn" class="btn btn-success">
+    <i class="fa-solid fa-seedling"></i> Buy Fertilizer (5 coins)
+  </button>
+  <button id="inventoryBtn" class="btn btn-secondary ms-2">
+    <i class="fa-solid fa-box"></i> View Inventory
+  </button>
+</div>
+
+
+
+</div>
+
+<!-- 🧺 Inventory Modal -->
+<div class="modal fade" id="inventoryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">My Inventory</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p><i class="fa-solid fa-bucket text-primary"></i> Water Buckets: <span id="waterCount">0</span></p>
+        <p><i class="fa-solid fa-seedling text-success"></i> Fertilizer: <span id="fertilizerCount">0</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
   </div>
 
   <!-- Scripts -->
