@@ -434,3 +434,15 @@ exports.getUserRewards = (req, res) => {
     }
   );
 };
+
+exports.getUserDiscounts = (req, res) => {
+  const user_id = req.params.user_id;
+  connection.query(
+    'SELECT reward_type, value, is_used FROM rewards WHERE user_id = ?',
+    [user_id],
+    (err, rows) => {
+      if (err) return res.status(500).json({ success: false, error: 'DB error' });
+      res.json({ success: true, discounts: rows });
+    }
+  );
+};

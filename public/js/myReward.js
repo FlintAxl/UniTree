@@ -218,6 +218,34 @@ function feedPet(type) {
 }
 
 
+function loadDiscounts() {
+  $.ajax({
+    url: `${url}api/v1/my-discounts/${userId}`,
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+    success: function(res) {
+      // Filter only discount coupons
+      const discounts = (res.discounts || []).filter(d => d.reward_type === 'discount');
+      if (discounts.length === 0) {
+        $('#discountList').html('<p class="text-muted">No coupons or discounts yet.</p>');
+      } else {
+        const html = discounts.map(d => `
+          <div class="alert alert-info mb-2">
+            <i class="fa-solid fa-ticket"></i>
+            <b>${d.value}</b>
+            ${d.is_used ? '<span class="badge bg-secondary">Used</span>' : '<span class="badge bg-success">Discount</span>'}
+          </div>
+        `).join('');
+        $('#discountList').html(html);
+      }
+    },
+    error: function() {
+      $('#discountList').html('<p class="text-danger">Failed to load discounts.</p>');
+    }
+  });
+}
+
+loadDiscounts();
 
     
 });

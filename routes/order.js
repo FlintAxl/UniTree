@@ -14,6 +14,6 @@ router.put('/orders/:orderId/status', order.updateOrderStatusSeller);
 //eto yungsa coins
 router.get('/my-rewards/:user_id', order.getUserRewards);
 
-
+router.get('/my-discounts/:user_id', order.getUserDiscounts);
 
 module.exports = router;
