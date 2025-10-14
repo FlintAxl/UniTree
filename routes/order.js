@@ -11,6 +11,7 @@ router.patch('/cancel-order', order.cancelOrder);
 router.get('/seller/:sellerId/orders', order.getSellerOrders);
 router.put('/orders/:orderId/status', order.updateOrderStatusSeller);
 
+//eto yungsa coins
 router.get('/my-rewards/:user_id', order.getUserRewards);
 
 

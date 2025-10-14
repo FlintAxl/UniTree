@@ -173,7 +173,8 @@ exports.getUserPet = (req, res) => {
 
 exports.feedPet = (req, res) => {
   const { user_id, item_type } = req.body;
-  if (!user_id || !item_type) return res.status(400).json({ message: 'Missing data' });
+  if (!user_id || !item_type)
+    return res.status(400).json({ message: 'Missing data' });
 
   const xpGain = item_type === 'water' ? 10 : 20;
 
@@ -183,25 +184,31 @@ exports.feedPet = (req, res) => {
     (err, rows) => {
       if (err) return res.status(500).json({ message: 'DB error' });
       if (rows.length === 0 || rows[0].quantity <= 0)
-        return res.status(400).json({ message: `You don't have any ${item_type}` });
+        return res
+          .status(400)
+          .json({ message: `You don't have any ${item_type}` });
 
-      // Consume item
+      // consume item
       db.query(
         'UPDATE user_inventory SET quantity = quantity - 1 WHERE user_id = ? AND item_type = ?',
         [user_id, item_type]
       );
 
-      // Increase XP and possibly level up
+      // get pet
       db.query('SELECT * FROM pets WHERE user_id = ?', [user_id], (err2, pets) => {
         if (err2) return res.status(500).json({ message: 'DB error' });
-        if (pets.length === 0) return res.status(400).json({ message: 'No pet found' });
+        if (pets.length === 0)
+          return res.status(400).json({ message: 'No pet found' });
 
         const pet = pets[0];
         let newXp = pet.xp + xpGain;
         let newLevel = pet.level;
-        if (newXp >= 100 && newLevel < 3) {
+        let leveledUp = false;
+
+        if (newXp >= 100) {
+          newXp = 0;
           newLevel += 1;
-          newXp = 0; // reset XP after level up
+          leveledUp = true;
         }
 
         db.query(
@@ -209,10 +216,98 @@ exports.feedPet = (req, res) => {
           [newXp, newLevel, user_id],
           (err3) => {
             if (err3) return res.status(500).json({ message: 'DB error' });
-            res.json({ success: true, message: 'Pet fed successfully!' });
+
+            // 🏆 Pet reached level 3
+            if (leveledUp && newLevel === 3) {
+              const rewards = generateRandomRewards(pet.pet_id, user_id);
+              const values = rewards.map((r) => [
+                user_id,
+                pet.pet_id,
+                r.reward_type,
+                r.value,
+              ]);
+
+              // insert all rewards into rewards table
+              db.query(
+                'INSERT INTO rewards (user_id, pet_id, reward_type, value) VALUES ?',
+                [values],
+                (err4) => {
+                  if (err4)
+                    console.error('Error inserting rewards:', err4);
+
+                  // 🔁 For every bonus_coins reward, insert a transaction
+                  const bonusRewards = rewards.filter(
+                    (r) => r.reward_type === 'bonus_coins'
+                  );
+
+                  if (bonusRewards.length > 0) {
+                    const insertTransactions = bonusRewards.map((r) => [
+                      user_id,
+                      null, // no order_id, direct bonus
+                      parseInt(r.value),
+                    ]);
+
+                    db.query(
+                      'INSERT INTO transactions (user_id, order_id, coins_earned) VALUES ?',
+                      [insertTransactions],
+                      (err5) => {
+                        if (err5)
+                          console.error('Error adding bonus coins:', err5);
+                        console.log(
+                          `💰 Added ${bonusRewards.length} bonus coin transaction(s) for user ${user_id}`
+                        );
+                        return res.json({
+                          success: true,
+                          message:
+                            'Pet fed and leveled up to level 3! Bonus coins credited.',
+                          rewards,
+                        });
+                      }
+                    );
+                  } else {
+                    return res.json({
+                      success: true,
+                      message:
+                        'Pet fed and leveled up to level 3! Rewards granted.',
+                      rewards,
+                    });
+                  }
+                }
+              );
+            } else {
+              res.json({
+                success: true,
+                message: leveledUp
+                  ? `Pet leveled up to Level ${newLevel}!`
+                  : 'Pet fed successfully!',
+              });
+            }
           }
         );
       });
     }
   );
 };
+
+// ===================== 🧩 Reward Generator =====================
+function generateRandomRewards(pet_id, user_id) {
+  const possibleDiscounts = [5, 10, 50]; // %
+  const possibleCoinBonuses = [50, 100, 200];
+
+  const rewards = [];
+  for (let i = 0; i < 3; i++) {
+    const type = Math.random() < 0.5 ? 'bonus_coins' : 'discount';
+
+    if (type === 'bonus_coins') {
+      const value =
+        possibleCoinBonuses[Math.floor(Math.random() * possibleCoinBonuses.length)];
+      rewards.push({ reward_type: 'bonus_coins', value: value.toString() });
+    } else {
+      const value =
+        possibleDiscounts[Math.floor(Math.random() * possibleDiscounts.length)];
+      rewards.push({ reward_type: 'discount', value: value + '%' });
+    }
+  }
+  return rewards;
+}
+

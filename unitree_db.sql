@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 11, 2025 at 03:08 PM
+-- Generation Time: Oct 14, 2025 at 03:15 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -162,6 +162,7 @@ CREATE TABLE `pets` (
 -- Dumping data for table `pets`
 --
 
+
 INSERT INTO `pets` (`pet_id`, `user_id`, `pet_name`, `level`, `xp`, `coins`, `level1_image`, `level2_image`, `level3_image`, `last_fed`, `has_fruit`) VALUES
 (28, 15, 'a', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
 (30, 16, 'kulet1', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
@@ -193,7 +194,7 @@ INSERT INTO `pets` (`pet_id`, `user_id`, `pet_name`, `level`, `xp`, `coins`, `le
 (85, 69, 'ki', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
 (86, 70, 'kilo', 1, 0, 0, 't1.jpg', 't2.png', 't3.jpg', NULL, 0),
 (87, 71, 'ha', 1, 0, 0, '1as.png', '2as.png', '3as.png', NULL, 0),
-(88, 7, 'freeza', 1, 30, 0, 't1.jpg', 't2.png', 't3.jpg', '2025-10-11 13:05:07', 0);
+(88, 7, 'freeza', 3, 150, 0, 't1.jpg', 't2.png', 't3.jpg', '2025-10-11 14:10:27', 0);
 
 -- --------------------------------------------------------
 
@@ -297,7 +298,7 @@ CREATE TABLE `rewards` (
   `reward_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `pet_id` int(11) NOT NULL,
-  `reward_type` enum('discount','free_shipping','bonus_coins') NOT NULL,
+  `reward_type` enum('discount','bonus_coins') NOT NULL,
   `value` varchar(50) NOT NULL,
   `is_used` tinyint(1) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -326,11 +327,30 @@ INSERT INTO `transactions` (`transaction_id`, `user_id`, `order_id`, `coins_earn
 (2, 7, 29, 0, '2025-10-08 13:03:56'),
 (3, 7, 30, 0, '2025-10-08 13:07:49'),
 (4, 7, 31, 2, '2025-10-08 13:11:43'),
-(5, 7, 32, 20, '2025-10-11 09:59:32'),
+(5, 7, 32, 90, '2025-10-11 09:59:32'),
 (6, 7, NULL, -5, '2025-10-11 11:27:24'),
 (7, 7, NULL, -2, '2025-10-11 11:27:31'),
 (8, 7, 33, 1, '2025-10-11 11:30:03'),
-(9, 7, 34, 3, '2025-10-11 11:30:51');
+(9, 7, 34, 3, '2025-10-11 11:30:51'),
+(10, 7, NULL, -2, '2025-10-11 13:35:58'),
+(11, 7, NULL, -5, '2025-10-11 13:37:28'),
+(12, 7, NULL, -5, '2025-10-11 13:37:39'),
+(13, 7, NULL, -5, '2025-10-11 13:37:42'),
+(14, 7, NULL, -2, '2025-10-11 13:38:42'),
+(15, 7, NULL, -2, '2025-10-11 13:41:32'),
+(16, 7, NULL, -5, '2025-10-11 13:41:34'),
+(17, 7, NULL, -5, '2025-10-11 13:47:32'),
+(18, 7, NULL, -5, '2025-10-11 13:47:34'),
+(19, 7, NULL, -5, '2025-10-11 13:50:41'),
+(20, 7, NULL, -5, '2025-10-11 14:01:18'),
+(21, 7, NULL, -2, '2025-10-11 14:01:52'),
+(22, 7, NULL, -5, '2025-10-11 14:02:58'),
+(23, 7, NULL, -5, '2025-10-11 14:03:00'),
+(24, 7, NULL, -5, '2025-10-11 14:03:02'),
+(25, 7, NULL, -5, '2025-10-11 14:03:04'),
+(26, 7, NULL, -2, '2025-10-11 14:03:24'),
+(27, 7, NULL, -5, '2025-10-11 14:03:45'),
+(28, 7, NULL, -5, '2025-10-11 14:10:21');
 
 -- --------------------------------------------------------
 
@@ -363,7 +383,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `role`, `created_at`, `token`, `first_name`, `last_name`, `age`, `birthday`, `address`, `gender`, `profile_picture`, `status`) VALUES
 (5, 'flint', 'flintaxl.celetaria@gmail.com', '$2b$10$nNlIhzJA9ja1ektzbApOee2U2zdk7tA7s.vZyZ3RKvtitq6NKUzuG', 'admin', '2025-09-23 02:12:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
 (6, 'bea', 'bea@gmail.com', '$2b$10$VvcXKPSLhVkcrT/Nb5a36eRquGTfFRO0sfv3oJkkMHwVaFpqBS0qG', 'seller', '2025-09-23 02:28:37', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
-(7, 'ash', 'ash@gmail.com', '$2b$10$Th0GH9.IPiSb5J.uWIJmaeSR.zSHRFPdsvJo6Lq3Rsr4lWrt2kURm', 'customer', '2025-09-23 02:33:36', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo3LCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NjAxODc3Nzh9.-Z-ckmWUapcUQNoVmWd5bb7o3MUNOymbkwkUADChJpI', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
+(7, 'ash', 'ash@gmail.com', '$2b$10$Th0GH9.IPiSb5J.uWIJmaeSR.zSHRFPdsvJo6Lq3Rsr4lWrt2kURm', 'customer', '2025-09-23 02:33:36', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo3LCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NjA0MDQ0OTB9.wQoK13vXgsKNf197PpMi-WORJjbtLY2q9cWQW60ziNs', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
 (12, 'a', 'a@gmail.com', '$2b$10$R5Rphq8YYSQMeWhsnbb/TeS1ISchse29gKt4aJCbO/LYs23YnQZZm', 'customer', '2025-09-23 04:35:50', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
 (15, 'kim', 'kim@gmail.com', '$2b$10$VU45G1S23LalvwTpnmLRAOGeVzyHWRPEvKaLUrIL/dGc4rmcRGsDO', 'seller', '2025-09-23 14:09:37', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
 (16, 'bab1', 'bab@gmail.com', '$2b$10$JR7USHa4BnULcRibeDGxzebMHmG8WgD6aW0EVpIXwFFMfSePV48tO', 'seller', '2025-09-23 14:21:25', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'approved'),
@@ -431,8 +451,8 @@ CREATE TABLE `user_inventory` (
 --
 
 INSERT INTO `user_inventory` (`inventory_id`, `user_id`, `item_type`, `quantity`, `created_at`, `updated_at`) VALUES
-(1, 7, 'fertilizer', 0, '2025-10-11 11:27:24', '2025-10-11 13:05:07'),
-(2, 7, 'water', 0, '2025-10-11 11:27:31', '2025-10-11 11:27:39');
+(1, 7, 'fertilizer', 0, '2025-10-11 11:27:24', '2025-10-11 14:10:27'),
+(2, 7, 'water', 0, '2025-10-11 11:27:31', '2025-10-11 14:03:38');
 
 --
 -- Indexes for dumped tables
@@ -593,7 +613,7 @@ ALTER TABLE `rewards`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -605,7 +625,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `user_inventory`
 --
 ALTER TABLE `user_inventory`
-  MODIFY `inventory_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `inventory_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Constraints for dumped tables

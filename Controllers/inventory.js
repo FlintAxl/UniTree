@@ -16,7 +16,7 @@ exports.getUserInventory = (req, res) => {
   );
 };
 
-// ...existing code...
+// .bili ng water and fertilizer
 
 exports.buyItem = (req, res) => {
   const { user_id, item_type } = req.body;

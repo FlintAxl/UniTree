@@ -195,15 +195,28 @@ $(document).on('click', '.pet-action-btn', () => {
 
 function feedPet(type) {
   $.post(`${url}api/v1/pets/feed`, { user_id: userId, item_type: type }, (res) => {
-    Swal.fire('Yum!', `Your pet gained XP!`, 'success');
-    loadInventory();
-    // Reload pet to show updated XP
-    setTimeout(() => location.reload(), 800);
+    if (res.rewards) {
+      let rewardList = res.rewards.map(r => `${r.reward_type}: ${r.value}`).join('<br>');
+      Swal.fire({
+        title: '🎉 Level Up!',
+        html: `Your pet reached Level 3!<br><b>Rewards:</b><br>${rewardList}`,
+        icon: 'success',
+        confirmButtonText: 'OK'
+      }).then(() => {
+        loadInventory();
+        location.reload();
+      });
+    } else {
+      Swal.fire('Yum!', `Your pet gained XP!`, 'success');
+      loadInventory();
+      setTimeout(() => location.reload(), 800);
+    }
   }).fail((xhr) => {
     const msg = xhr.responseJSON?.message || 'Feeding failed.';
     Swal.fire('Error', msg, 'error');
   });
 }
+
 
 
     
