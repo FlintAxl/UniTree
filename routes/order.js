@@ -16,4 +16,6 @@ router.get('/my-rewards/:user_id', order.getUserRewards);
 
 router.get('/my-discounts/:user_id', order.getUserDiscounts);
 
+router.post('/trade-discount', order.tradeDiscount);
+
 module.exports = router;

@@ -248,4 +248,72 @@ function loadDiscounts() {
 loadDiscounts();
 
     
+// ==================== DISCOUNT TRADE SECTION ====================
+
+// Available discounts and their coin costs
+const discountOptions = [
+  { percent: 5, cost: 10 },
+  { percent: 10, cost: 20 },
+  { percent: 15, cost: 30 },
+  { percent: 20, cost: 40 },
+  { percent: 30, cost: 60 },
+  { percent: 40, cost: 80 },
+  { percent: 45, cost: 90 },
+  { percent: 50, cost: 100 }
+];
+
+// Render buttons for discounts
+function renderDiscountOptions() {
+  const html = discountOptions.map(d => `
+    <button class="btn btn-outline-primary trade-discount-btn"
+            data-percent="${d.percent}"
+            data-cost="${d.cost}">
+      ${d.percent}% OFF - ${d.cost} coins
+    </button>
+  `).join('');
+  $('#discountOptions').html(html);
+}
+
+// Handle trade button click
+$(document).on('click', '.trade-discount-btn', function () {
+  const percent = $(this).data('percent');
+  const cost = $(this).data('cost');
+
+  if (totalCoins < cost) {
+    return Swal.fire('Insufficient Coins', 'You do not have enough coins for this discount.', 'warning');
+  }
+
+  Swal.fire({
+    title: `Trade ${cost} coins for ${percent}% OFF coupon?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, trade now!'
+  }).then(result => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: `${url}api/v1/trade-discount`,
+        method: 'POST',
+        contentType: 'application/json',
+        headers: { Authorization: `Bearer ${token}` },
+        data: JSON.stringify({
+          user_id: userId,
+          percent: percent,
+          cost: cost
+        }),
+        success: function (res) {
+          Swal.fire('Success!', res.message || 'Discount traded successfully!', 'success');
+          loadCoins();
+          loadDiscounts();
+        },
+        error: function (xhr) {
+          Swal.fire('Error', xhr.responseJSON?.message || 'Failed to trade discount.', 'error');
+        }
+      });
+    }
+  });
+});
+
+renderDiscountOptions();
+
+
 });

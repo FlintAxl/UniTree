@@ -446,3 +446,59 @@ exports.getUserDiscounts = (req, res) => {
     }
   );
 };
+
+
+// 🎟️ TRADE DISCOUNT
+exports.tradeDiscount = (req, res) => {
+  const { user_id, percent, cost } = req.body;
+
+  if (!user_id || !percent || !cost) {
+    return res.status(400).json({ success: false, message: 'Missing data.' });
+  }
+
+  // Step 1: Check user's current coins
+  connection.query(
+    'SELECT COALESCE(SUM(coins_earned), 0) AS total_coins FROM transactions WHERE user_id = ?',
+    [user_id],
+    (err, rows) => {
+      if (err) return res.status(500).json({ success: false, message: 'Database error.' });
+
+      const total_coins = rows[0].total_coins;
+      if (total_coins < cost) {
+        return res.status(400).json({ success: false, message: 'Insufficient coins.' });
+      }
+
+      // Step 2: Get user's pet_id
+      connection.query(
+        'SELECT pet_id FROM pets WHERE user_id = ? LIMIT 1',
+        [user_id],
+        (errPet, petRows) => {
+          if (errPet || petRows.length === 0) {
+            return res.status(500).json({ success: false, message: 'No pet found for user.' });
+          }
+          const pet_id = petRows[0].pet_id;
+
+          // Step 3: Deduct coins (record as negative transaction)
+          connection.query(
+            'INSERT INTO transactions (user_id, order_id, coins_earned) VALUES (?, NULL, ?)',
+            [user_id, -cost],
+            (err2) => {
+              if (err2) return res.status(500).json({ success: false, message: 'Failed to deduct coins.' });
+
+              // Step 4: Add discount to rewards table
+              connection.query(
+                'INSERT INTO rewards (user_id, pet_id, reward_type, value) VALUES (?, ?, "discount", ?)',
+                [user_id, pet_id, `${percent}%`],
+                (err3) => {
+                  if (err3) return res.status(500).json({ success: false, message: 'Failed to save discount.' });
+
+                  res.json({ success: true, message: `You received a ${percent}% OFF coupon!` });
+                }
+              );
+            }
+          );
+        }
+      );
+    }
+  );
+};
