@@ -51,7 +51,19 @@ exports.createOrder = (req, res) => {
         if (err3) return res.status(500).json({ error: 'Insert order_items failed', details: err3 });
 
         // 4. Calculate total amount
-        const totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        let totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+const { discount_percent, reward_id } = req.body;
+if (discount_percent && reward_id) {
+  const discountValue = (discount_percent / 100) * totalAmount;
+  totalAmount -= discountValue;
+
+  // Mark discount as used
+  connection.query('DELETE FROM rewards WHERE reward_id = ?', [reward_id], (err) => {
+    if (err) console.error('Failed to mark discount used:', err);
+  });
+}
+
 
         // 5. Update order with total amount
         connection.execute(

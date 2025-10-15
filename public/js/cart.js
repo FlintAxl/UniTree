@@ -243,17 +243,25 @@ function checkout() {
     if (!userId) return Swal.fire('Login required');
     if (!cart.length) return Swal.fire('Cart is empty');
 
-    const totalAmount = cart.reduce((sum, c) => sum + (c.price * c.quantity), 0);
+   let totalAmount = cart.reduce((sum, c) => sum + (c.price * c.quantity), 0);
+if (appliedDiscount) {
+  const discountValue = (appliedDiscount.percent / 100) * totalAmount;
+  totalAmount -= discountValue;
+}
+
 
     const payload = {
-        user_id: userId,
-        total_amount: totalAmount,
-        items: cart.map(c => ({
-            product_id: c.id,
-            quantity: c.quantity,
-            price: c.price
-        }))
-    };
+  user_id: userId,
+  total_amount: totalAmount,
+  discount_percent: appliedDiscount ? appliedDiscount.percent : 0,
+  reward_id: appliedDiscount ? appliedDiscount.rewardId : null,
+  items: cart.map(c => ({
+    product_id: c.id,
+    quantity: c.quantity,
+    price: c.price
+  }))
+};
+
 
     $.ajax({
         method: 'POST',
@@ -281,3 +289,65 @@ function checkout() {
         }
     });
 }
+// =================== DISCOUNT FEATURE ===================
+let appliedDiscount = null;
+let userDiscounts = [];
+
+// Show discount modal
+
+$('#useDiscountBtn').on('click', function() {
+  const userId = JSON.parse(sessionStorage.getItem('userId'));
+  if (!userId) return Swal.fire('Please log in first.');
+
+  $.ajax({
+    url: `${url}api/v1/my-discounts/${userId}`,
+    method: 'GET',
+    success: function(discounts) {
+      // FIX: Use discounts.discounts array
+      userDiscounts = discounts.discounts || [];
+      if (!userDiscounts.length) {
+        Swal.fire('No available discounts', 'You currently have no discount coupons.', 'info');
+        return;
+      }
+
+      const html = userDiscounts.map(d => `
+        <div class="discount-item" data-id="${d.reward_id}" data-value="${d.value}"
+          style="border:1px solid #ccc; border-radius:8px; padding:10px; margin:5px; cursor:pointer;">
+          <strong>${d.value} OFF</strong><br>
+          <small>Click to use this coupon</small>
+        </div>
+      `).join('');
+
+      $('#discountListContainer').html(html);
+      $('#discountModal').fadeIn();
+    },
+    error: function() {
+      Swal.fire('Error', 'Failed to load your discounts.', 'error');
+    }
+  });
+});
+
+
+// Close modal
+$('#closeDiscountModal').on('click', function() {
+  $('#discountModal').fadeOut();
+});
+
+// Apply discount
+$(document).on('click', '.discount-item', function() {
+  const discountValue = $(this).data('value');
+  const rewardId = $(this).data('id');
+
+  const percent = parseFloat(discountValue.replace('%', ''));
+  appliedDiscount = { percent, rewardId };
+
+  // Apply discount to total
+  const subtotal = parseFloat($('#subtotal').text().replace(/[₱,]/g, ''));
+  const discountAmount = subtotal * (percent / 100);
+  const newTotal = subtotal - discountAmount;
+
+  $('#total').text('₱' + newTotal.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+  Swal.fire('Discount Applied!', `${percent}% OFF has been applied to your total.`, 'success');
+
+  $('#discountModal').fadeOut();
+});
